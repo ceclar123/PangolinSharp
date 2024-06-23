@@ -13,13 +13,14 @@
       },
       {
         "Name": "m1_2",
-        "Type": "SeparatorMenuItem"
+        "Type": "Separator"
       },
       {
         "Name": "m1_3",
         "Header": "Gzip",
         "Type": "MenuItem",
-        "UserControl": "encode/gzip-view.UserControl"
+        "UserControl": "Pangolin.Desktop.Views.Encode.GzipUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Encode.GzipUserControlViewModel"
       },
       {
         "Name": "m1_4",
@@ -133,7 +134,7 @@
       },
       {
         "Name": "m3_4",
-        "Type": "SeparatorMenuItem"
+        "Type": "Separator"
       },
       {
         "Name": "m3_5",

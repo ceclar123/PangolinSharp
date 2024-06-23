@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Z.ExtensionMethods" Version="2.1.1" />
+    <!--<PackageReference Include="Z.ExtensionMethods" Version="2.1.1" />-->
   </ItemGroup>
 
 </Project>

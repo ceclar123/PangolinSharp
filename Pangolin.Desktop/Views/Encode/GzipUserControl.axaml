@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:Pangolin.Desktop.ViewModels.Encode"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Pangolin.Desktop.Views.Encode.GzipUserControl"
+			 x:DataType="vm:GzipUserControlViewModel">
+	<Design.DataContext>
+		<vm:GzipUserControlViewModel/>
+	</Design.DataContext>
+	<Grid ColumnDefinitions="*">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="50"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+		</Grid.RowDefinitions>
+		<TextBox Name="tbFrom" Text="{Binding From}" AcceptsReturn="True" TextWrapping="Wrap" Grid.Column="0" Grid.Row="0"/>
+		<Border BorderBrush="Black" BorderThickness="1" CornerRadius="2" Grid.Column="0" Grid.Row="1" Margin="0,1,0,1">
+			<StackPanel Height="50" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+				<Button Command="{Binding CmdCompress}">压缩</Button>
+				<Button Command="{Binding CmdDecompress}">解压</Button>
+			</StackPanel>
+		</Border>
+		<TextBox Name="tbTo" Text="{Binding To}" AcceptsReturn="True" TextWrapping="Wrap" Grid.Column="0" Grid.Row="2"/>
+	</Grid>
+</UserControl>

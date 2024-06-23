@@ -6,6 +6,10 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <StartupObject>Pangolin.Desktop.Program</StartupObject>
+    <PublishAot>False</PublishAot>
+    <PackageIcon>pangolin_32.ico</PackageIcon>
+    <ApplicationIcon>Assets\icon\pangolin_32.ico</ApplicationIcon>	  
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +24,10 @@
     <None Remove="Assets\pangolin_32.ico" />
     <None Remove="Assets\pangolin_48.ico" />
     <None Remove="Assets\pangolin_64.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\icon\pangolin_32.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +46,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Update="Assets\icon\pangolin_32.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
     <AvaloniaResource Update="Assets\json\menu.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
@@ -56,5 +67,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\icon\pangolin_32.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>		
+    </None>
   </ItemGroup>
 </Project>
