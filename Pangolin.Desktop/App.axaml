@@ -1,0 +1,15 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Pangolin.Desktop.App"
+             RequestedThemeVariant="Default">
+	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+	<Application.Styles>
+		<FluentTheme/>
+		<Styles>
+			<Style Selector="Button">
+				<Setter Property="Margin" Value="5,1,1,5"></Setter>
+			</Style>
+		</Styles>
+	</Application.Styles>
+</Application>

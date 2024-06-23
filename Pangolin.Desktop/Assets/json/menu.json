@@ -1,0 +1,146 @@
+[
+  {
+    "Name": "m1",
+    "Header": "编解码",
+    "Type": "MenuItem",
+    "Items": [
+      {
+        "Name": "m1_1",
+        "Header": "Base64",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Encode.Base64UserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Encode.Base64UserControlViewModel"
+      },
+      {
+        "Name": "m1_2",
+        "Type": "SeparatorMenuItem"
+      },
+      {
+        "Name": "m1_3",
+        "Header": "Gzip",
+        "Type": "MenuItem",
+        "UserControl": "encode/gzip-view.UserControl"
+      },
+      {
+        "Name": "m1_4",
+        "Header": "Zip",
+        "Type": "MenuItem",
+        "UserControl": "encode/zip-view.UserControl"
+      },
+      {
+        "Name": "m1_5",
+        "Header": "Deflate",
+        "Type": "MenuItem",
+        "UserControl": "encode/deflate-view.UserControl"
+      },
+      {
+        "Name": "m1_6",
+        "Header": "Snappy",
+        "Type": "MenuItem",
+        "UserControl": "encode/snappy-view.UserControl"
+      },
+      {
+        "Name": "m1_7",
+        "Header": "Lz4",
+        "Type": "MenuItem",
+        "UserControl": "encode/lz4-view.UserControl"
+      },
+      {
+        "Name": "m1_8",
+        "Header": "Lzo",
+        "Type": "MenuItem",
+        "UserControl": "encode/lzo-view.UserControl"
+      },
+      {
+        "Name": "m1_9",
+        "Header": "Zstd",
+        "Type": "MenuItem",
+        "UserControl": "encode/zstd-view.UserControl"
+      },
+      {
+        "Name": "m1_10",
+        "Header": "BZip2",
+        "Type": "MenuItem",
+        "UserControl": "encode/bzip2-view.UserControl"
+      },
+      {
+        "Name": "m1_11",
+        "Header": "Lzma",
+        "Type": "MenuItem",
+        "UserControl": "encode/lzma-view.UserControl"
+      },
+      {
+        "Name": "m1_12",
+        "Header": "Pack200",
+        "Type": "MenuItem",
+        "UserControl": "encode/pack200-view.UserControl"
+      },
+      {
+        "Name": "m1_13",
+        "Header": "XZ",
+        "Type": "MenuItem",
+        "UserControl": "encode/xz-view.UserControl"
+      }
+    ]
+  },
+  {
+    "Name": "m2",
+    "Header": "JSON工具",
+    "Type": "MenuItem",
+    "Items": [
+      {
+        "Name": "m2_1",
+        "Header": "JSON格式化",
+        "Type": "MenuItem",
+        "UserControl": "json/format-view.UserControl"
+      },
+      {
+        "Name": "m2_2",
+        "Header": "JSON转CSV",
+        "Type": "MenuItem",
+        "UserControl": "json/convert-csv-view.UserControl"
+      },
+      {
+        "Name": "m2_3",
+        "Header": "JSON转实体",
+        "Type": "MenuItem",
+        "UserControl": "json/convert-entity-view.UserControl"
+      }
+    ]
+  },
+  {
+    "Name": "m3",
+    "Header": "加解密",
+    "Type": "MenuItem",
+    "Items": [
+      {
+        "Name": "m3_1",
+        "Header": "AES",
+        "Type": "MenuItem",
+        "UserControl": "crypto/aes-view.UserControl"
+      },
+      {
+        "Name": "m3_2",
+        "Header": "DES",
+        "Type": "MenuItem",
+        "UserControl": "crypto/des-view.UserControl"
+      },
+      {
+        "Name": "m3_3",
+        "Header": "TripleDES",
+        "Type": "MenuItem",
+        "UserControl": "crypto/triple-des-view.UserControl"
+      },
+      {
+        "Name": "m3_4",
+        "Type": "SeparatorMenuItem"
+      },
+      {
+        "Name": "m3_5",
+        "Header": "RSA",
+        "Type": "MenuItem",
+        "UserControl": "crypto/rsa-view.UserControl"
+      }
+    ]
+  }
+]
