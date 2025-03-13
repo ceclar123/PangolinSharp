@@ -1,21 +1,23 @@
-using Avalonia.Controls;
-using Pangolin.Desktop.Models;
-using Pangolin.Utility;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Controls.Primitives;
-using Pangolin.Desktop.Views.Encode;
-using Pangolin.Desktop.ViewModels.Encode;
-using System.Reflection;
+using Avalonia.Interactivity;
+using Pangolin.Desktop.Json;
+using Pangolin.Desktop.Models;
 using Pangolin.Desktop.ViewModels;
+using Pangolin.Utility;
 
 namespace Pangolin.Desktop.Views
 {
     public partial class MainWindow : Window
     {
         private WindowNotificationManager? _manager;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,7 +38,12 @@ namespace Pangolin.Desktop.Views
                 return;
             }
 
-            List<MenuItemDTO> list = JsonSerializer.Deserialize<List<MenuItemDTO>>(Pangolin.Desktop.Properties.Resources.MenuJsonData);
+            var sourceGenOptions = new JsonSerializerOptions
+            {
+                TypeInfoResolver = MenuItemDtoGenerationContext.Default
+            };
+            // List<MenuItemDTO> list = JsonSerializer.Deserialize<List<MenuItemDTO>>(Properties.Resources.MenuJsonData);
+            List<MenuItemDTO> list = JsonSerializer.Deserialize(Properties.Resources.MenuJsonData, typeof(List<MenuItemDTO>), sourceGenOptions) as List<MenuItemDTO>;
             if (ObjectUtil.IsNotNull(list))
             {
                 menu?.Items.Clear();
@@ -46,6 +53,7 @@ namespace Pangolin.Desktop.Views
                     {
                         continue;
                     }
+
                     object val = GetSubMenuItem(item);
                     if (ObjectUtil.IsNotNull(val))
                     {
@@ -72,7 +80,7 @@ namespace Pangolin.Desktop.Views
                     Header = current.Header,
                     Tag = current.UserControl + "," + current.ViewModel
                 };
-                // µÝ¹é                
+
                 if (ObjectUtil.IsNotNull(current.Items))
                 {
                     foreach (MenuItemDTO child in current.Items)
@@ -81,6 +89,7 @@ namespace Pangolin.Desktop.Views
                         {
                             continue;
                         }
+
                         object val = GetSubMenuItem(child);
                         if (ObjectUtil.IsNotNull(val))
                         {
@@ -98,15 +107,16 @@ namespace Pangolin.Desktop.Views
             }
         }
 
-        private void MenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void MenuItem_Click(object? sender, RoutedEventArgs e)
         {
-            // ±ê¼ÇÊÂ¼þÒÑ´¦Àí£¬·ÀÖ¹Ã°ÅÝµ½ÆäËû´¦Àí³ÌÐò
+            // ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹Ã°ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             e.Handled = true;
             MenuItem menuItem = (sender as MenuItem) ?? null;
             if (ObjectUtil.IsNull(menuItem))
             {
                 return;
             }
+
             TabControl tabControl = this.FindControl<TabControl>("tabControl") ?? null;
             if (ObjectUtil.IsNull(tabControl))
             {
@@ -117,12 +127,13 @@ namespace Pangolin.Desktop.Views
             for (int i = 0; i < tabControl.Items.Count; i++)
             {
                 TabItem findOne = (tabControl.Items[i] as TabItem) ?? null;
-                if (findOne != null && Object.Equals(findOne.Name, menuItem.Name))
+                if (findOne != null && Equals(findOne.Name, menuItem.Name))
                 {
                     index = i;
                     break;
                 }
             }
+
             if (index > -1)
             {
                 tabControl.SelectedIndex = index;
@@ -130,7 +141,7 @@ namespace Pangolin.Desktop.Views
             else
             {
                 TabItem tabItem = new TabItem { Name = menuItem.Name, Header = menuItem.Header, Content = new Panel() };
-                tabItem.Margin = new Avalonia.Thickness(5, 0, 5, 0);
+                tabItem.Margin = new Thickness(5, 0, 5, 0);
                 UserControl userControl = this.BuildUserControl(menuItem);
                 if (userControl != null)
                 {
@@ -140,7 +151,7 @@ namespace Pangolin.Desktop.Views
                 }
                 else
                 {
-                    _manager?.Show(new Notification("´íÎó", "ÅäÖÃ´íÎó", NotificationType.Information));
+                    _manager?.Show(new Notification("ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½", NotificationType.Information));
                 }
             }
         }

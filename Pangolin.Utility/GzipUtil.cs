@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 
 namespace Pangolin.Utility
 {
-    public class GzipUtil
+    public static class GzipUtil
     {
-        private GzipUtil()
-        { }
-
         /// <summary>
         /// 压缩
         /// </summary>
@@ -20,14 +11,10 @@ namespace Pangolin.Utility
         /// <returns></returns>
         public static byte[] Compress(byte[] input)
         {
-            using (MemoryStream compressStream = new MemoryStream())
-            {
-                using (GZipStream zipStream = new GZipStream(compressStream, CompressionMode.Compress))
-                {
-                    zipStream.Write(input, 0, input.Length);
-                    return compressStream.ToArray();
-                }
-            }
+            using MemoryStream compressStream = new MemoryStream();
+            using GZipStream zipStream = new GZipStream(compressStream, CompressionMode.Compress);
+            zipStream.Write(input, 0, input.Length);
+            return compressStream.ToArray();
         }
 
         /// <summary>
@@ -37,17 +24,11 @@ namespace Pangolin.Utility
         /// <returns></returns>
         public static byte[] Decompress(byte[] input)
         {
-            using (MemoryStream compressStream = new MemoryStream(input))
-            {
-                using (GZipStream zipStream = new GZipStream(compressStream, CompressionMode.Decompress))
-                {
-                    using (MemoryStream resultStream = new MemoryStream())
-                    {
-                        zipStream.CopyTo(resultStream);
-                        return resultStream.ToArray();
-                    }
-                }
-            }
+            using MemoryStream compressStream = new MemoryStream(input);
+            using GZipStream zipStream = new GZipStream(compressStream, CompressionMode.Decompress);
+            using MemoryStream resultStream = new MemoryStream();
+            zipStream.CopyTo(resultStream);
+            return resultStream.ToArray();
         }
 
         /// <summary>
@@ -57,16 +38,10 @@ namespace Pangolin.Utility
         /// <param name="outputFile">压缩文件</param>
         public static void Compress(string inputFile, string outputFile)
         {
-            using (FileStream inputStream = new FileStream(inputFile, FileMode.Open))
-            {
-                using (FileStream outputStream = File.Create(outputFile))
-                {
-                    using (GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress))
-                    {
-                        inputStream.CopyTo(compressionStream);
-                    }
-                }
-            }
+            using FileStream inputStream = new FileStream(inputFile, FileMode.Open);
+            using FileStream outputStream = File.Create(outputFile);
+            using GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress);
+            inputStream.CopyTo(compressionStream);
         }
 
         /// <summary>
@@ -76,16 +51,10 @@ namespace Pangolin.Utility
         /// <param name="outputFile">原始文件</param>
         public static void Decompress(string inputFile, string outputFile)
         {
-            using (FileStream inputStream = new FileStream(inputFile, FileMode.Open))
-            {
-                using (FileStream outputStream = File.Create(outputFile))
-                {
-                    using (GZipStream decompressionStream = new GZipStream(inputStream, CompressionMode.Decompress))
-                    {
-                        decompressionStream.CopyTo(outputStream);
-                    }
-                }
-            }
+            using FileStream inputStream = new FileStream(inputFile, FileMode.Open);
+            using FileStream outputStream = File.Create(outputFile);
+            using GZipStream decompressionStream = new GZipStream(inputStream, CompressionMode.Decompress);
+            decompressionStream.CopyTo(outputStream);
         }
     }
 }

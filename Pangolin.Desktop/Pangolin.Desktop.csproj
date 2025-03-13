@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>Pangolin.Desktop</AssemblyName>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -7,7 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <StartupObject>Pangolin.Desktop.Program</StartupObject>
-    <PublishAot>False</PublishAot>
+    <PublishAot>false</PublishAot>
     <PackageIcon>pangolin_32.ico</PackageIcon>
     <ApplicationIcon>Assets\icon\pangolin_32.ico</ApplicationIcon>	  
   </PropertyGroup>

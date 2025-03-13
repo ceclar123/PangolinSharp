@@ -25,8 +25,8 @@ namespace Pangolin.Desktop
 
                 if (desktop.MainWindow.Screens.Primary != null)
                 {
-                    desktop.MainWindow.Width = desktop.MainWindow.Screens.Primary.Bounds.Width / 2;
-                    desktop.MainWindow.Height = desktop.MainWindow.Screens.Primary.Bounds.Height / 2;
+                    desktop.MainWindow.Width = desktop.MainWindow.Screens.Primary.Bounds.Width / 2.0;
+                    desktop.MainWindow.Height = desktop.MainWindow.Screens.Primary.Bounds.Height / 2.0;
                 }
                 else
                 {

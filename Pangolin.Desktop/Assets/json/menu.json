@@ -143,5 +143,19 @@
         "UserControl": "crypto/rsa-view.UserControl"
       }
     ]
+  },
+  {
+    "Name": "m4",
+    "Header": "图片",
+    "Type": "MenuItem",
+    "Items": [
+      {
+        "Name": "m4_1",
+        "Header": "查看图片",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Image.ImageViewUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Image.ImageViewUserControlViewModel"
+      }
+    ]
   }
 ]
