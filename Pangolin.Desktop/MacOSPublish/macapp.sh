@@ -1,7 +1,7 @@
 #!/bin/bash
 APP_NAME="./Pangolin.Desktop.app"
 # 替换成dotnet编译好的目录
-PUBLISH_OUTPUT_DIRECTORY="../bin/Release/net8.0/osx-arm64/publish/."
+PUBLISH_OUTPUT_DIRECTORY="../bin/Release/net8.0/osx-x64/publish/."
 # PUBLISH_OUTPUT_DIRECTORY should point to the output directory of your dotnet publish command.
 # One example is /path/to/your/csproj/bin/Release/netcoreapp3.1/osx-x64/publish/.
 # If you want to change output directories, add `--output /my/directory/path` to your `dotnet publish` command.

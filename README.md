@@ -76,3 +76,29 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 cd Pangolin.Desktop
 dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime osx-arm64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
 dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime osx-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
+
+## 打包成可执行文件
+cd MacOSPublish
+sh macapp.sh
+
+首先，打开终端，然后切换到桌面或者你想要的任何地方。
+然后在桌面（终端切换到的目录）准备一张1024*1024像素的你想用来做图标的png文件，命名为pic.png
+接着继续在终端操作，新建一个目录（也可以直接右键新建，记得保留后缀）
+mkdir tmp.iconset
+上面我们就新建了一个名字为tmp.iconset的文件夹，下面的命令是用来生成不同分辨率下的图片的，直接全部复制粘贴到终端运行一遍即可。
+```
+sips -z 16 16 pangolin_1024.png --out tmp.iconset/icon_16x16.png
+sips -z 32 32 pangolin_1024.png --out tmp.iconset/icon_16x16@2x.png
+sips -z 32 32 pangolin_1024.png --out tmp.iconset/icon_32x32.png
+sips -z 64 64 pangolin_1024.png --out tmp.iconset/icon_32x32@2x.png
+sips -z 32 32 pangolin_1024.png --out tmp.iconset/icon_64x64.png
+sips -z 64 64 pangolin_1024.png --out tmp.iconset/icon_64x64@2x.png
+sips -z 128 128 pangolin_1024.png --out tmp.iconset/icon_128x128.png
+sips -z 256 256 pangolin_1024.png --out tmp.iconset/icon_128x128@2x.png
+sips -z 256 256 pangolin_1024.png --out tmp.iconset/icon_256x256.png
+sips -z 512 512 pangolin_1024.png --out tmp.iconset/icon_256x256@2x.png
+sips -z 512 512 pangolin_1024.png --out tmp.iconset/icon_512x512.png
+sips -z 1024 1024 pangolin_1024.png --out tmp.iconset/icon_512x512@2x.png
+```
+一切顺利的话，你打开tmp.iconset文件夹可以看到这些生成的图片。
+最后输入 iconutil -c icns tmp.iconset -o Icon.icns 就可以生成一个icns文件了。

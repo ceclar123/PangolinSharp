@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Include="MacOSPublish\tray.icns" />
   </ItemGroup>
 
   <ItemGroup>
