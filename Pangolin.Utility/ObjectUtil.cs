@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pangolin.Utility
+﻿namespace Pangolin.Utility
 {
-    public class ObjectUtil
+    public static class ObjectUtil
     {
-        private ObjectUtil() { }
-
-        public static bool IsNull([AllowNull][NotNullWhen(false)] object val)
+        public static bool IsNull(object? val)
         {
             return val == null;
         }
 
-        public static bool IsNotNull([AllowNull][NotNullWhen(true)] object val)
+        public static bool IsNotNull(object? val)
         {
             return val != null;
         }

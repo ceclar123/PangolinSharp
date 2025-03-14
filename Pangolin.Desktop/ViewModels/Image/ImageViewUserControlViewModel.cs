@@ -6,9 +6,11 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
+using Pangolin.Utility;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Image;
@@ -17,10 +19,9 @@ public class ImageViewUserControlViewModel : ViewModelBase
 {
     public String? ImageUrl { get; set; } = string.Empty;
     public Bitmap? ImageSource { get; private set; } = null;
-    public string LocalFilePath { get; private set; }
+    public string? LocalFilePath { get; private set; }
     public ReactiveCommand<Unit, Unit> CmdLoadImage { get; protected set; }
     public ReactiveCommand<Unit, Unit> CmdBrowseFilePath { get; protected set; }
-
 
     public ImageViewUserControlViewModel()
     {
@@ -30,26 +31,40 @@ public class ImageViewUserControlViewModel : ViewModelBase
 
     private async Task BrowseFilePath()
     {
-        var dialog = new SaveFileDialog
+        TopLevel? topLevel = TopLevel.GetTopLevel(ParentWindow);
+        IStorageProvider? storageProvider = topLevel?.StorageProvider;
+        if (ObjectUtil.IsNull(storageProvider))
         {
-            Title = "Save Image As",
-            Filters = new List<FileDialogFilter>
+            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info,
+                WindowStartupLocation.CenterOwner);
+            await box.ShowWindowDialogAsync(this.ParentWindow);
+            return;
+        }
+
+        // 启动异步操作以打开对话框。
+        var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "图片另存为",
+            FileTypeChoices = new List<FilePickerFileType>
             {
-                new FileDialogFilter
+                new FilePickerFileType("图片")
                 {
-                    Name = "Image Files",
-                    Extensions = { "jpg", "jpeg", "png", "bmp", "gif" }
+                    Patterns = new List<string> { "*.jpg", "*.png" }
                 }
             }
-        };
+        });
 
-        var result = await dialog.ShowAsync(new Window());
-        if (!string.IsNullOrWhiteSpace(result))
+        if (ObjectUtil.IsNull(file))
         {
-            LocalFilePath = result;
-            // 下载图片
-            await this.DownloadImageAsync();
+            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件系统错误", ButtonEnum.Ok, Icon.Info,
+                WindowStartupLocation.CenterOwner);
+            await box.ShowWindowDialogAsync(this.ParentWindow);
+            return;
         }
+
+        LocalFilePath = file.Path.AbsolutePath;
+        // 下载图片
+        await this.DownloadImageAsync();
     }
 
 

@@ -1,10 +1,7 @@
 ﻿namespace Pangolin.Utility
 {
-    public class Base64Util
+    public static class Base64Util
     {
-        private Base64Util()
-        { }
-
         /// <summary>
         /// Base64编码
         /// </summary>
@@ -12,7 +9,7 @@
         /// <returns></returns>
         public static string Encode(byte[] input)
         {
-            return System.Convert.ToBase64String(input);
+            return Convert.ToBase64String(input);
         }
 
         /// <summary>
@@ -22,7 +19,7 @@
         /// <returns></returns>
         public static byte[] Decode(string input)
         {
-            return System.Convert.FromBase64String(input);
+            return Convert.FromBase64String(input);
         }
     }
 }

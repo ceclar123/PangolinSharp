@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace Pangolin.Utility
 {
     public class CollectionUtil
     {
         private CollectionUtil()
-        { }
-        public static bool IsEmpty([AllowNull] ICollection coll)
+        {
+        }
+
+        public static bool IsEmpty(ICollection? coll)
         {
             return coll == null || coll.Count == 0;
         }
 
-        public static bool IsNotEmpty([AllowNull] ICollection coll)
+        public static bool IsNotEmpty(ICollection? coll)
         {
             return coll != null && coll.Count > 0;
         }
