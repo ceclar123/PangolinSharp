@@ -93,7 +93,8 @@
         "Name": "m2_1",
         "Header": "JSON格式化",
         "Type": "MenuItem",
-        "UserControl": "json/format-view.UserControl"
+        "UserControl": "Pangolin.Desktop.Views.Json.JsonViewUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Json.JsonViewUserControlViewModel"
       },
       {
         "Name": "m2_2",
