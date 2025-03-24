@@ -9,4 +9,5 @@ public class JsonViewNode
     public ObservableCollection<JsonViewNode> SubNodes { get; set; } = new ObservableCollection<JsonViewNode>();
     public string? Name { get; set; }
     public string? Value { get; set; }
+    public string? ShowValue => Name + Value;
 }

@@ -20,7 +20,7 @@ namespace Pangolin.Desktop.ViewModels.Json;
 
 public class JsonViewUserControlViewModel : ViewModelBase
 {
-    public ObservableCollection<JsonViewNode> Nodes { get; } = new ObservableCollection<JsonViewNode>();
+    public ObservableCollection<JsonViewNode> RootNodes { get; } = new ObservableCollection<JsonViewNode>();
     public string? JsonUrl { get; set; } = string.Empty;
     public string? JsonString { get; set; } = string.Empty;
     public string? LocalFilePath { get; private set; }
@@ -97,9 +97,9 @@ public class JsonViewUserControlViewModel : ViewModelBase
                     JsonViewNode? viewNode = CreateTree(node, node is JsonObject ? "Root" : "");
                     if (viewNode != null)
                     {
-                        Nodes.Clear();
-                        Nodes.Add(viewNode);
-                        this.RaisePropertyChanged(nameof(Nodes));
+                        RootNodes.Clear();
+                        RootNodes.Add(viewNode);
+                        this.RaisePropertyChanged(nameof(RootNodes));
                     }
                 }
             });
@@ -156,30 +156,36 @@ public class JsonViewUserControlViewModel : ViewModelBase
         JsonViewNode node = new JsonViewNode() { Name = key };
         if (jsonNode is JsonObject jsonObject)
         {
+            int index = 0;
             foreach (var property in jsonObject)
             {
+                index++;
                 JsonViewNode? tmpNode = CreateTree(property.Value, property.Key);
                 if (tmpNode != null)
                 {
                     node.SubNodes.Add(tmpNode);
                 }
             }
+
+            node.Value = " {" + index + "}";
         }
         else if (jsonNode is JsonArray jsonArray)
         {
             int index = 0;
             foreach (var item in jsonArray)
             {
-                JsonViewNode? tmpNode = CreateTree(item, $"Item {index++}");
+                JsonViewNode? tmpNode = CreateTree(item, $"{index++}");
                 if (tmpNode != null)
                 {
                     node.SubNodes.Add(tmpNode);
                 }
             }
+
+            node.Value = " [" + index + "]";
         }
-        else
+        else if (jsonNode is JsonValue jsonValue)
         {
-            node.Value = jsonNode.ToString();
+            node.Value = " : " + jsonValue.ToString();
         }
 
         return node;
