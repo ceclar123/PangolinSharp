@@ -9,9 +9,9 @@
     <Design.DataContext>
         <vm:ImageViewUserControlViewModel />
     </Design.DataContext>
-    <Grid ColumnDefinitions="*,60,60" Margin="0,10,0,0">
+    <Grid ColumnDefinitions="*,70,70" Margin="0,10,0,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch"

@@ -7,6 +7,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Pangolin.Desktop.Json;
 using Pangolin.Desktop.Models;
 using Pangolin.Desktop.ViewModels;
@@ -77,6 +79,7 @@ namespace Pangolin.Desktop.Views
                 {
                     Name = current.Name,
                     Header = current.Header,
+                    HorizontalAlignment = HorizontalAlignment.Center,
                     Tag = current.UserControl + "," + current.ViewModel
                 };
 
@@ -140,8 +143,13 @@ namespace Pangolin.Desktop.Views
             {
                 TabItem tabItem = new TabItem
                 {
-                    Name = menuItem.Name, Header = menuItem.Header, Content = new Panel(),
-                    Margin = new Thickness(5, 0, 5, 0)
+                    Name = menuItem.Name,
+                    Header = menuItem.Header,
+                    Content = new Panel(),
+                    Margin = new Thickness(5, 0, 5, 0),
+                    FlowDirection = FlowDirection.LeftToRight,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    HorizontalContentAlignment = HorizontalAlignment.Center
                 };
                 UserControl? userControl = this.BuildUserControl(menuItem);
                 if (userControl != null)
