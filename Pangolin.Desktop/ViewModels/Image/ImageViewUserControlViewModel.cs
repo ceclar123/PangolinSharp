@@ -10,7 +10,6 @@ using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
-using Pangolin.Utility;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Image;
@@ -33,7 +32,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
     {
         TopLevel? topLevel = TopLevel.GetTopLevel(ParentWindow);
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
-        if (ObjectUtil.IsNull(storageProvider))
+        if (storageProvider is null)
         {
             IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info,
                 WindowStartupLocation.CenterOwner);
@@ -54,11 +53,8 @@ public class ImageViewUserControlViewModel : ViewModelBase
             }
         });
 
-        if (ObjectUtil.IsNull(file))
+        if (file is null)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件系统错误", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 

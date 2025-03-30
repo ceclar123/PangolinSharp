@@ -101,7 +101,7 @@
         "Header": "JSON转CSV",
         "Type": "MenuItem",
         "UserControl": "Pangolin.Desktop.Views.Json.JsonConvertCsvUserControl",
-        "ViewModel": "Pangolin.Desktop.ViewModels.Json.JsonConvertCsvUserControlViewModel"
+        "ViewModel": ""
       },
       {
         "Name": "m2_3",

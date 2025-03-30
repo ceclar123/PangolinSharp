@@ -169,27 +169,38 @@ namespace Pangolin.Desktop.Views
         {
             string? tag = menuItem.Tag?.ToString();
             string[] array = tag?.Split(',') ?? new string[0];
-            if (array == null || array.Length != 2 || String.IsNullOrEmpty(array[0]) || String.IsNullOrEmpty(array[1]))
+            if (array.Length < 1 || string.IsNullOrWhiteSpace(array[0]))
             {
                 return null;
             }
 
             Type? ctlType = Assembly.GetExecutingAssembly().GetType(array[0]) ?? null;
-            Type? viewModelType = Assembly.GetExecutingAssembly().GetType(array[1]) ?? null;
-            if (ctlType == null || viewModelType == null)
+            if (ctlType is null)
             {
                 return null;
             }
 
             UserControl? userControl = Activator.CreateInstance(ctlType) as UserControl;
-            ViewModelBase? viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
-            if (userControl == null || viewModel == null)
+            if (userControl is null)
             {
                 return null;
             }
 
-            viewModel.ParentWindow = this;
-            userControl.DataContext = viewModel;
+            if (array.Length > 1 && !string.IsNullOrWhiteSpace(array[1]))
+            {
+                Type? viewModelType = Assembly.GetExecutingAssembly().GetType(array[1]) ?? null;
+                ViewModelBase? viewModel = viewModelType is null ? null : Activator.CreateInstance(viewModelType) as ViewModelBase;
+                if (viewModel is not null)
+                {
+                    viewModel.ParentWindow = this;
+                    userControl.DataContext = viewModel;
+                }
+            }
+
+            if (userControl is UserControlBase userControlBase)
+            {
+                userControlBase.ParentWindow = this;
+            }
 
             return userControl;
         }

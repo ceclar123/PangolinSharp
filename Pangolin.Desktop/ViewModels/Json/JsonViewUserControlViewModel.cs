@@ -13,7 +13,6 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
 using Pangolin.Desktop.Models;
-using Pangolin.Utility;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Json;
@@ -37,7 +36,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
     {
         TopLevel? topLevel = TopLevel.GetTopLevel(ParentWindow);
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
-        if (storageProvider == null)
+        if (storageProvider is null)
         {
             IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info,
                 WindowStartupLocation.CenterOwner);
@@ -58,11 +57,8 @@ public class JsonViewUserControlViewModel : ViewModelBase
             }
         });
 
-        if (ObjectUtil.IsNull(file))
+        if (file is null)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件系统错误", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 
@@ -101,6 +97,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
                         {
                             RootNodes = new ObservableCollection<JsonViewNode>();
                         }
+
                         RootNodes.Clear();
                         RootNodes.Add(viewNode);
                         this.RaisePropertyChanged(nameof(RootNodes));
@@ -171,6 +168,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
                     {
                         node.SubNodes = new ObservableCollection<JsonViewNode>();
                     }
+
                     node.SubNodes.Add(tmpNode);
                 }
             }
@@ -189,6 +187,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
                     {
                         node.SubNodes = new ObservableCollection<JsonViewNode>();
                     }
+
                     node.SubNodes.Add(tmpNode);
                 }
             }
