@@ -11,8 +11,8 @@
                 <Setter Property="Margin" Value="5,1,1,5" />
             </Style>
             <Style Selector="TextBox">
-                <Setter Property="BorderThickness" Value="2" />
-                <Setter Property="BorderBrush" Value="#2196F3" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="#e0e0e0" />
                 <Setter Property="Background" Value="White" />
                 <Setter Property="Padding" Value="2" />
             </Style>

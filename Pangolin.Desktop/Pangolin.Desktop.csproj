@@ -14,40 +14,40 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
-        <AvaloniaResource Include="MacOSPublish\tray.icns"/>
+        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="MacOSPublish\tray.icns" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Assets\json\menu.json"/>
-        <None Remove="Assets\pangolin_128.ico"/>
-        <None Remove="Assets\pangolin_16.ico"/>
-        <None Remove="Assets\pangolin_256.ico"/>
-        <None Remove="Assets\pangolin_32.ico"/>
-        <None Remove="Assets\pangolin_48.ico"/>
-        <None Remove="Assets\pangolin_64.ico"/>
+        <None Remove="Assets\json\menu.json" />
+        <None Remove="Assets\pangolin_128.ico" />
+        <None Remove="Assets\pangolin_16.ico" />
+        <None Remove="Assets\pangolin_256.ico" />
+        <None Remove="Assets\pangolin_32.ico" />
+        <None Remove="Assets\pangolin_48.ico" />
+        <None Remove="Assets\pangolin_64.ico" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Assets\icon\pangolin_32.ico"/>
+        <Content Include="Assets\icon\pangolin_32.ico" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5"/>
+        <PackageReference Include="Avalonia" Version="11.2.5" />        
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />        
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5"/>
-        <PackageReference Include="Citrus.Avalonia" Version="2.1.1"/>
-        <PackageReference Include="Material.Avalonia" Version="3.9.2"/>
-        <PackageReference Include="Material.Avalonia.DataGrid" Version="3.9.2"/>
-        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1"/>
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
+        <PackageReference Include="Citrus.Avalonia" Version="2.1.1" />
+        <PackageReference Include="Material.Avalonia" Version="3.9.2" />
+        <PackageReference Include="Material.Avalonia.DataGrid" Version="3.9.2" />
+        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pangolin.Utility\Pangolin.Utility.csproj"/>
+        <ProjectReference Include="..\Pangolin.Utility\Pangolin.Utility.csproj" />
     </ItemGroup>
 
     <ItemGroup>

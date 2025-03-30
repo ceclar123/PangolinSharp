@@ -20,7 +20,7 @@ namespace Pangolin.Desktop.ViewModels.Json;
 
 public class JsonViewUserControlViewModel : ViewModelBase
 {
-    public ObservableCollection<JsonViewNode> RootNodes { get; } = new ObservableCollection<JsonViewNode>();
+    public ObservableCollection<JsonViewNode>? RootNodes { get; set; }
     public string? JsonUrl { get; set; } = string.Empty;
     public string? JsonString { get; set; } = string.Empty;
     public string? LocalFilePath { get; private set; }
@@ -97,6 +97,10 @@ public class JsonViewUserControlViewModel : ViewModelBase
                     JsonViewNode? viewNode = CreateTree(node, node is JsonObject ? "Root" : "");
                     if (viewNode != null)
                     {
+                        if (RootNodes is null)
+                        {
+                            RootNodes = new ObservableCollection<JsonViewNode>();
+                        }
                         RootNodes.Clear();
                         RootNodes.Add(viewNode);
                         this.RaisePropertyChanged(nameof(RootNodes));
@@ -163,6 +167,10 @@ public class JsonViewUserControlViewModel : ViewModelBase
                 JsonViewNode? tmpNode = CreateTree(property.Value, property.Key);
                 if (tmpNode != null)
                 {
+                    if (node.SubNodes is null)
+                    {
+                        node.SubNodes = new ObservableCollection<JsonViewNode>();
+                    }
                     node.SubNodes.Add(tmpNode);
                 }
             }
@@ -177,6 +185,10 @@ public class JsonViewUserControlViewModel : ViewModelBase
                 JsonViewNode? tmpNode = CreateTree(item, $"{index++}");
                 if (tmpNode != null)
                 {
+                    if (node.SubNodes is null)
+                    {
+                        node.SubNodes = new ObservableCollection<JsonViewNode>();
+                    }
                     node.SubNodes.Add(tmpNode);
                 }
             }
