@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Pangolin.Desktop.ViewModels;
@@ -19,9 +20,9 @@ namespace Pangolin.Desktop
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
-                    WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterScreen
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
+                desktop.MainWindow.DataContext = new MainWindowViewModel() { ParentWindow = desktop.MainWindow };
 
                 if (desktop.MainWindow.Screens.Primary != null)
                 {

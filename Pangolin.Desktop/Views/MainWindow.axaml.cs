@@ -44,8 +44,8 @@ namespace Pangolin.Desktop.Views
             {
                 TypeInfoResolver = MenuItemDtoGenerationContext.Default
             };
-            List<MenuItemDTO> list = JsonSerializer.Deserialize(Properties.Resources.MenuJsonData, typeof(List<MenuItemDTO>), sourceGenOptions) as List<MenuItemDTO>;
-            if (ObjectUtil.IsNotNull(list))
+            List<MenuItemDTO>? list = JsonSerializer.Deserialize(Properties.Resources.MenuJsonData, typeof(List<MenuItemDTO>), sourceGenOptions) as List<MenuItemDTO>;
+            if (list is not null)
             {
                 menu?.Items.Clear();
                 foreach (MenuItemDTO item in list)
@@ -85,17 +85,20 @@ namespace Pangolin.Desktop.Views
 
                 if (ObjectUtil.IsNotNull(current.Items))
                 {
-                    foreach (MenuItemDTO child in current.Items)
+                    if (current.Items is not null)
                     {
-                        if (ObjectUtil.IsNull(child))
+                        foreach (MenuItemDTO child in current.Items)
                         {
-                            continue;
-                        }
+                            if (ObjectUtil.IsNull(child))
+                            {
+                                continue;
+                            }
 
-                        object? val = GetSubMenuItem(child);
-                        if (ObjectUtil.IsNotNull(val))
-                        {
-                            menuItem.Items.Add(val);
+                            object? val = GetSubMenuItem(child);
+                            if (ObjectUtil.IsNotNull(val))
+                            {
+                                menuItem.Items.Add(val);
+                            }
                         }
                     }
                 }
@@ -113,13 +116,13 @@ namespace Pangolin.Desktop.Views
         {
             e.Handled = true;
             MenuItem? menuItem = (sender as MenuItem) ?? null;
-            if (ObjectUtil.IsNull(menuItem))
+            if (menuItem is null)
             {
                 return;
             }
 
             TabControl? tabControl = this.FindControl<TabControl>("tabControl") ?? null;
-            if (ObjectUtil.IsNull(tabControl))
+            if (tabControl is null)
             {
                 return;
             }

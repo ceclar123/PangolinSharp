@@ -35,6 +35,7 @@ namespace Pangolin.Desktop
                 .With(new X11PlatformOptions { EnableMultiTouch = true, UseDBusMenu = true })
                 .With(new Win32PlatformOptions { RenderingMode = new Win32RenderingMode[] { Win32RenderingMode.AngleEgl } })
                 .UseSkia()
-                .UseManagedSystemDialogs();
+                //.UseManagedSystemDialogs()
+            ;
     }
 }
