@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Reactive;
 using System.Text;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
 using Pangolin.Desktop.Models;
 using ReactiveUI;
@@ -38,9 +38,8 @@ public class JsonViewUserControlViewModel : ViewModelBase
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 
@@ -72,9 +71,8 @@ public class JsonViewUserControlViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(JsonUrl))
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 
@@ -107,15 +105,19 @@ public class JsonViewUserControlViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
     }
 
     private byte[] DownloadImageAsync(string url)
     {
-        using var client = new HttpClient();
+        var handler = new HttpClientHandler
+        {
+            // 同时支持 gzip 和 deflate 压缩格式
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+        };
+        using var client = new HttpClient(handler);
         return client.GetByteArrayAsync(url).Result;
     }
 
@@ -128,22 +130,25 @@ public class JsonViewUserControlViewModel : ViewModelBase
 
         try
         {
-            using var client = new HttpClient();
+            var handler = new HttpClientHandler
+            {
+                // 同时支持 gzip 和 deflate 压缩格式
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            using var client = new HttpClient(handler);
             using var response = await client.GetAsync(JsonUrl);
             response.EnsureSuccessStatusCode();
             byte[] bytes = await response.Content.ReadAsByteArrayAsync();
             // 保存到本地文件
             await File.WriteAllBytesAsync(LocalFilePath, bytes);
 
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
         catch (Exception e)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
     }
 
