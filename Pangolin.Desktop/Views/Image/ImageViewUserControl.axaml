@@ -15,7 +15,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch"
-                 Grid.Column="0" Grid.Row="0" />
+                 Margin="5" Grid.Column="0" Grid.Row="0" />
         <Button Content="加载" Command="{Binding CmdLoadImage}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" />
         <Button Content="下载" Command="{Binding CmdBrowseFilePath}" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="0" />
         <Image Source="{Binding ImageSource}" VerticalAlignment="Stretch" Stretch="Uniform"

@@ -1,15 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.Reactive;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
-using MsBox.Avalonia;
 using Pangolin.Utility;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pangolin.Desktop.ViewModels.Encode
 {
@@ -40,9 +37,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
                 {
                     await Task.Run(() =>
                     {
-
-                        byte[] data = GzipUtil.Compress(System.Text.Encoding.UTF8.GetBytes(From.Trim()));
-                        To = Base64Util.Encode(data);
+                        To = GzipUtil.CompressAndBase64Encode(From.Trim());
                         // 通知改变
                         this.RaisePropertyChanged(nameof(To));
                     });
@@ -68,9 +63,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
                 {
                     await Task.Run(() =>
                     {
-
-                        byte[] data = Base64Util.Decode(From.Trim());
-                        To = Encoding.UTF8.GetString(GzipUtil.Decompress(data));
+                        To = GzipUtil.DecompressBase64Decode(From.Trim());
                         // 通知改变
                         this.RaisePropertyChanged(nameof(To));
                     });
