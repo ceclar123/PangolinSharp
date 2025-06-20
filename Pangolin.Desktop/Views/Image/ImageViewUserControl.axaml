@@ -9,16 +9,17 @@
     <Design.DataContext>
         <vm:ImageViewUserControlViewModel />
     </Design.DataContext>
-    <Grid ColumnDefinitions="70,*,70,70" Margin="5,10,5,0">
+    <Grid ColumnDefinitions="*,70,70" Margin="5,10,5,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Text="图片链接:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" />
-        <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch"
-                 Margin="5" Grid.Column="1" Grid.Row="0" />
-        <Button Content="加载" Command="{Binding CmdLoadImage}" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="0" Classes="Primary" Margin="0,0,5,0" />
-        <Button Content="下载" Command="{Binding CmdBrowseFilePath}" HorizontalAlignment="Stretch" Grid.Column="3" Grid.Row="0" Classes="Secondary" />
+        <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch" Watermark="图片链接"
+                 Margin="5" Grid.Column="0" Grid.Row="0" />
+        <Button Content="加载" Command="{Binding CmdLoadImage}" HorizontalAlignment="Stretch" Grid.Column="1"
+                Grid.Row="0" Classes="Primary" Margin="0,0,5,0" />
+        <Button Content="下载" Command="{Binding CmdBrowseFilePath}" HorizontalAlignment="Stretch" Grid.Column="2"
+                Grid.Row="0" Classes="Secondary" />
         <Image Source="{Binding ImageSource}" VerticalAlignment="Stretch" Stretch="Uniform"
                Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" />
     </Grid>
