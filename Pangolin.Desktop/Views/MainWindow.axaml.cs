@@ -79,7 +79,7 @@ namespace Pangolin.Desktop.Views
                 {
                     Name = current.Name,
                     Header = current.Header,
-                    HorizontalAlignment = HorizontalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Left,
                     Tag = current.UserControl + "," + current.ViewModel
                 };
 

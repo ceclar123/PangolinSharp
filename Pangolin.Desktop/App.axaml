@@ -1,81 +1,14 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-             x:Class="Pangolin.Desktop.App" RequestedThemeVariant="Light">
+             x:Class="Pangolin.Desktop.App" xmlns:semi="https://irihi.tech/semi"
+             RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+    <!-- https://github.com/irihitech/Semi.Avalonia -->
+    <!-- https://irihitech.github.io/Semi.Avalonia/ -->
     <Application.Styles>
-        <FluentTheme />
-        <Styles>
-            <Style Selector="Button">
-                <Setter Property="Margin" Value="5,1,1,5" />
-            </Style>
-            <Style Selector="TextBox">
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="#e0e0e0" />
-                <Setter Property="Background" Value="White" />
-                <Setter Property="Padding" Value="2" />
-            </Style>
-            <!-- 定义 TabControl 的默认边框和背景 -->
-            <Style Selector="TabControl">
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="BorderBrush" Value="#2196F3" />
-                <Setter Property="Background" Value="White" />
-                <Setter Property="ItemsPanel">
-                    <ItemsPanelTemplate>
-                        <StackPanel
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left"
-                            Spacing="2" />
-                    </ItemsPanelTemplate>
-                </Setter>
-            </Style>
-
-            <!-- 定义 TabItem 的样式：标签背景、文字颜色 -->
-            <Style Selector="TabItem">
-                <Setter Property="Background" Value="#e0e0e0" />
-                <Setter Property="Foreground" Value="Black" />
-                <Setter Property="Margin" Value="1" />
-                <Setter Property="Padding" Value="1" />
-                <Setter Property="BorderThickness" Value="0 0 0 1" /> <!-- 左边悬空效果 -->
-                <Setter Property="Width" Value="0" />
-            </Style>
-
-            <!-- 当标签被选中时的样式 -->
-            <Style Selector="TabItem:checked">
-                <Setter Property="Background" Value="White" />
-                <Setter Property="BorderBrush" Value="#2196F3" />
-                <Setter Property="BorderThickness" Value="1" />
-            </Style>
-
-            <!-- 鼠标悬停时的样式 -->
-            <Style Selector="TabItem:pointerover">
-                <Setter Property="Background" Value="#d5d5d5" />
-            </Style>
-
-            <!-- =============== 主菜单栏样式 =============== -->
-            <Style Selector="Menu">
-                <Setter Property="Background" Value="#eff0f1" /> <!-- 背景浅灰色 -->
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Padding" Value="5,0" />        <!-- 上下留白 -->
-                <Setter Property="MinHeight" Value="30" />       <!-- 固定高度 -->
-            </Style>
-
-            <!-- =============== 主菜单项样式 =============== -->
-            <Style Selector="MenuItem">
-                <Setter Property="Margin" Value="5,0" />         <!-- 间距 -->
-                <Setter Property="Padding" Value="5,5" />       <!-- 内边距 -->
-                <Setter Property="Foreground" Value="#222" />    <!-- 文字默认色 -->
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-            </Style>
-        </Styles>
-        <themes:MaterialTheme BaseTheme="Light" PrimaryColor="Indigo" SecondaryColor="Amber" />
-        <!-- <SimpleTheme /> -->
-        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Citrus.xaml" /> -->
-        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Sea.xaml"/> -->
-        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Rust.xaml"/> -->
-        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Candy.xaml"/> -->
-        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Magma.xaml"/> -->
+        <semi:SemiTheme Locale="zh-CN" />
+        <StyleInclude Source="avares://Semi.Avalonia.ColorPicker/Index.axaml" />
+        <StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
+        <StyleInclude Source="avares://Semi.Avalonia.TreeDataGrid/Index.axaml" />
     </Application.Styles>
 </Application>
