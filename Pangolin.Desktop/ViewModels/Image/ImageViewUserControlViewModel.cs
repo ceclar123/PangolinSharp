@@ -8,8 +8,8 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
+using Pangolin.Utility;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Image;
@@ -30,13 +30,19 @@ public class ImageViewUserControlViewModel : ViewModelBase
 
     private async Task BrowseFilePath()
     {
+        if (!CommonUtil.IsValidHttpUrl(ImageUrl))
+        {
+            await MessageBoxManager.GetMessageBoxStandard("提示", "图片链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
+            return;
+        }
+
         TopLevel? topLevel = TopLevel.GetTopLevel(ParentWindow);
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 
@@ -66,11 +72,10 @@ public class ImageViewUserControlViewModel : ViewModelBase
 
     private async Task LoadImage()
     {
-        if (string.IsNullOrWhiteSpace(ImageUrl))
+        if (!CommonUtil.IsValidHttpUrl(ImageUrl))
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "图片链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
 
@@ -87,9 +92,8 @@ public class ImageViewUserControlViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
     }
 
@@ -101,7 +105,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
 
     private async Task DownloadImageAsync()
     {
-        if (string.IsNullOrWhiteSpace(ImageUrl) || string.IsNullOrWhiteSpace(LocalFilePath))
+        if (!CommonUtil.IsValidHttpUrl(ImageUrl) || string.IsNullOrWhiteSpace(LocalFilePath))
         {
             return;
         }
@@ -115,15 +119,13 @@ public class ImageViewUserControlViewModel : ViewModelBase
             // 保存到本地文件
             await File.WriteAllBytesAsync(LocalFilePath, imageBytes);
 
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
         catch (Exception e)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
     }
 }

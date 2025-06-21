@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -37,6 +38,11 @@ namespace Pangolin.Desktop
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private void Close_OnClick(object? sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

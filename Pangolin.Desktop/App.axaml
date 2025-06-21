@@ -11,4 +11,24 @@
         <StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
         <StyleInclude Source="avares://Semi.Avalonia.TreeDataGrid/Index.axaml" />
     </Application.Styles>
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/icon/pangolin_64.ico" ToolTipText="Pangolin.Desktop">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Settings" Click="Close_OnClick">
+                            <NativeMenu>
+                                <NativeMenuItem Header="Option 1" />
+                                <NativeMenuItem Header="Option 2" />
+                                <NativeMenuItemSeparator />
+                                <NativeMenuItem Header="Option 3" />
+                            </NativeMenu>
+                        </NativeMenuItem>
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="关闭" Click="Close_OnClick" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>

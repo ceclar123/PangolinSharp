@@ -120,7 +120,8 @@
         "Name": "m3_1",
         "Header": "AES",
         "Type": "MenuItem",
-        "UserControl": "crypto/aes-view.UserControl"
+        "UserControl": "Pangolin.Desktop.Views.Encode.AesUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Encode.AesUserControlViewModel"
       },
       {
         "Name": "m3_2",

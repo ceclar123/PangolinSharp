@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Pangolin.Desktop.ViewModels.Encode"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Pangolin.Desktop.Views.Encode.AesUserControl"
+             x:DataType="vm:AesUserControlViewModel">
+    <Design.DataContext>
+        <vm:AesUserControlViewModel />
+    </Design.DataContext>
+    <Grid ColumnDefinitions="*,80,*" Margin="0,10,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <RelativePanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <TextBlock x:Name="TbkKey" Text="密钥长度:" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80"
+                       Margin="10,0,5,0" />
+            <ComboBox x:Name="CbbKey" RelativePanel.RightOf="TbkKey" Margin="0,0,5,0"
+                      ItemsSource="{Binding Path=KeyItems}" SelectedValue="{Binding Path=SelectedKey}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button x:Name="BtnKeyGen" RelativePanel.RightOf="CbbKey" Content="生 成=>" Width="80" Margin="0,0,5,0"
+                    Command="{Binding CmdGenKey}" />
+            <TextBox x:Name="TtbKey" RelativePanel.RightOf="BtnKeyGen" Width="300"
+                     Text="{Binding  Path=Key,Mode=TwoWay}" />
+        </RelativePanel>
+        <RelativePanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+            <TextBlock x:Name="TbkIv" Text="向量长度:" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80"
+                       Margin="10,0,5,0" />
+            <ComboBox x:Name="CbbIv" RelativePanel.RightOf="TbkIv" Margin="0,0,5,0"
+                      ItemsSource="{Binding Path=IvItems}" SelectedValue="{Binding Path=SelectedIv}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button x:Name="BtnIvGen" RelativePanel.RightOf="CbbIv" Content="生 成=>" Width="80" Margin="0,0,5,0"
+                    Command="{Binding CmdGenIv}" />
+            <TextBox x:Name="TtbIv" RelativePanel.RightOf="BtnIvGen" Width="300" Text="{Binding  Path=Iv,Mode=TwoWay}" />
+        </RelativePanel>
+        <Expander VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="5" Grid.Column="0"
+                  Grid.Row="2" IsExpanded="True" Header="明文" ExpandDirection="Down">
+            <TextBox Text="{Binding Plaintext}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+        </Expander>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"
+                    Grid.Row="2">
+            <Button Command="{Binding CmdEncrypt}" Classes="Primary" Margin="0,0,0,10">加 密</Button>
+            <Button Command="{Binding CmdDecrypt}" Classes="Secondary">解 密</Button>
+        </StackPanel>
+        <Expander VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="5" Grid.Column="2"
+                  Grid.Row="2" IsExpanded="True" Header="明文" ExpandDirection="Down">
+            <TextBox Text="{Binding Ciphertext}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+        </Expander>
+    </Grid>
+</UserControl>

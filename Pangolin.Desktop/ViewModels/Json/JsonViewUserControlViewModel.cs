@@ -13,6 +13,7 @@ using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Pangolin.Desktop.Models;
+using Pangolin.Utility;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Json;
@@ -34,6 +35,13 @@ public class JsonViewUserControlViewModel : ViewModelBase
 
     private async Task BrowseFilePath()
     {
+        if (!CommonUtil.IsValidHttpUrl(JsonUrl))
+        {
+            await MessageBoxManager.GetMessageBoxStandard("提示", "JSON文件链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
+            return;
+        }
+
         TopLevel? topLevel = TopLevel.GetTopLevel(ParentWindow);
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
@@ -69,9 +77,9 @@ public class JsonViewUserControlViewModel : ViewModelBase
 
     private async Task LoadJson()
     {
-        if (string.IsNullOrWhiteSpace(JsonUrl))
+        if (!CommonUtil.IsValidHttpUrl(JsonUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+            await MessageBoxManager.GetMessageBoxStandard("提示", "JSON文件链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
                 .ShowWindowDialogAsync(this.ParentWindow);
             return;
         }
@@ -123,7 +131,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
 
     private async Task DownloadImageAsync()
     {
-        if (string.IsNullOrWhiteSpace(JsonUrl) || string.IsNullOrWhiteSpace(LocalFilePath))
+        if (!CommonUtil.IsValidHttpUrl(JsonUrl) || string.IsNullOrWhiteSpace(LocalFilePath))
         {
             return;
         }
