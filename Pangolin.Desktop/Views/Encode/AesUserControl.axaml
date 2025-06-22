@@ -13,16 +13,44 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <RelativePanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <TextBlock x:Name="TbkMode" Text="BlockCipherMode:" VerticalAlignment="Center" HorizontalAlignment="Left"
+                       Width="170" Margin="10,0,5,0" />
+            <ComboBox x:Name="CbbMode" RelativePanel.RightOf="TbkMode" Margin="0,0,5,0" Width="170"
+                      ItemsSource="{Binding Path=ModeItems}" SelectedValue="{Binding Path=SelectedMode}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=CfgName}" VerticalAlignment="Center"
+                                   HorizontalAlignment="Left" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </RelativePanel>
+        <RelativePanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+            <TextBlock x:Name="TbkPadding" Text="BlockCipherTbkPadding:" VerticalAlignment="Center"
+                       HorizontalAlignment="Left" Width="170" Margin="10,0,5,0" />
+            <ComboBox x:Name="CbbPadding" RelativePanel.RightOf="TbkPadding" Margin="0,0,5,0" Width="170"
+                      ItemsSource="{Binding Path=PaddingItems}" SelectedValue="{Binding Path=SelectedPadding}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=CfgName}" VerticalAlignment="Center"
+                                   HorizontalAlignment="Left" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </RelativePanel>
+        <RelativePanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
             <TextBlock x:Name="TbkKey" Text="密钥长度:" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80"
                        Margin="10,0,5,0" />
             <ComboBox x:Name="CbbKey" RelativePanel.RightOf="TbkKey" Margin="0,0,5,0"
                       ItemsSource="{Binding Path=KeyItems}" SelectedValue="{Binding Path=SelectedKey}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
@@ -31,14 +59,14 @@
             <TextBox x:Name="TtbKey" RelativePanel.RightOf="BtnKeyGen" Width="300"
                      Text="{Binding  Path=Key,Mode=TwoWay}" />
         </RelativePanel>
-        <RelativePanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+        <RelativePanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3">
             <TextBlock x:Name="TbkIv" Text="向量长度:" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80"
                        Margin="10,0,5,0" />
             <ComboBox x:Name="CbbIv" RelativePanel.RightOf="TbkIv" Margin="0,0,5,0"
                       ItemsSource="{Binding Path=IvItems}" SelectedValue="{Binding Path=SelectedIv}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
@@ -47,18 +75,18 @@
             <TextBox x:Name="TtbIv" RelativePanel.RightOf="BtnIvGen" Width="300" Text="{Binding  Path=Iv,Mode=TwoWay}" />
         </RelativePanel>
         <Expander VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="5" Grid.Column="0"
-                  Grid.Row="2" IsExpanded="True" Header="明文" ExpandDirection="Down">
+                  Grid.Row="4" IsExpanded="True" Header="明文" ExpandDirection="Down">
             <TextBox Text="{Binding Plaintext}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
                      TextWrapping="Wrap" />
         </Expander>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"
-                    Grid.Row="2">
+                    Grid.Row="4">
             <Button Command="{Binding CmdEncrypt}" Classes="Primary" Margin="0,0,0,10">加 密</Button>
             <Button Command="{Binding CmdDecrypt}" Classes="Secondary">解 密</Button>
         </StackPanel>
         <Expander VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="5" Grid.Column="2"
-                  Grid.Row="2" IsExpanded="True" Header="明文" ExpandDirection="Down">
+                  Grid.Row="4" IsExpanded="True" Header="明文" ExpandDirection="Down">
             <TextBox Text="{Binding Ciphertext}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
                      TextWrapping="Wrap" />

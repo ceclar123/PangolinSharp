@@ -8,14 +8,24 @@ using Avalonia.Controls;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
+using Org.BouncyCastle.Crypto;
 using Pangolin.Desktop.Models;
 using Pangolin.Utility;
+using Pangolin.Utility.Aes;
 using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Encode;
 
 public class AesUserControlViewModel : ViewModelBase
 {
+    public ObservableCollection<AesModeItem> ModeItems { get; } = new ObservableCollection<AesModeItem>(AesUtil.BlockCipherModeList);
+
+    public AesModeItem SelectedMode { get; set; }
+
+    public ObservableCollection<AesPaddingItem> PaddingItems { get; } = new ObservableCollection<AesPaddingItem>(AesUtil.BlockCipherPaddingList);
+
+    public AesPaddingItem SelectedPadding { get; set; }
+
     public ObservableCollection<SelectItemDTO> KeyItems { get; } = new ObservableCollection<SelectItemDTO>() { new SelectItemDTO(16, "16字节"), new SelectItemDTO(24, "24字节"), new SelectItemDTO(32, "32字节") };
     public ObservableCollection<SelectItemDTO> IvItems { get; } = new ObservableCollection<SelectItemDTO>() { new SelectItemDTO(16, "16字节") };
     public string Plaintext { get; set; } = string.Empty;
@@ -35,6 +45,9 @@ public class AesUserControlViewModel : ViewModelBase
 
     public AesUserControlViewModel()
     {
+        SelectedMode = ModeItems.First();
+        SelectedPadding = PaddingItems.First();
+
         SelectedKey = KeyItems.First();
         SelectedIv = IvItems.First();
 
@@ -75,7 +88,9 @@ public class AesUserControlViewModel : ViewModelBase
             {
                 await Task.Run(() =>
                 {
-                    Ciphertext = Base64Util.Encode(AesUtil.Encrypt(Encoding.UTF8.GetBytes(Plaintext.Trim()), Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)));
+                    ICipherParameters cipherParam = SelectedMode.HasIv ? AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)) : AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key));
+                    byte[]? output = AesFactory.GetHandler(SelectedMode.CfgName)?.Encrypt(Encoding.UTF8.GetBytes(Plaintext.Trim()), SelectedPadding.Padding, cipherParam);
+                    Ciphertext = Base64Util.Encode(output ?? []);
                     // 通知改变
                     this.RaisePropertyChanged(nameof(Ciphertext));
                 });
@@ -101,7 +116,9 @@ public class AesUserControlViewModel : ViewModelBase
             {
                 await Task.Run(() =>
                 {
-                    Plaintext = Encoding.UTF8.GetString(AesUtil.Decrypt(Base64Util.Decode(Ciphertext.Trim()), Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)));
+                    ICipherParameters cipherParam = SelectedMode.HasIv ? AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)) : AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key));
+                    byte[]? output = AesFactory.GetHandler(SelectedMode.CfgName)?.Decrypt(Base64Util.Decode(Ciphertext.Trim()), SelectedPadding.Padding, cipherParam);
+                    Plaintext = Encoding.UTF8.GetString(output ?? []);
                     // 通知改变
                     this.RaisePropertyChanged(nameof(Plaintext));
                 });
