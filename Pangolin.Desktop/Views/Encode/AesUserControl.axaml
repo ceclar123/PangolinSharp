@@ -9,12 +9,12 @@
     <Design.DataContext>
         <vm:AesUserControlViewModel />
     </Design.DataContext>
-    <Grid ColumnDefinitions="*,80,*" Margin="0,10,0,0">
+    <Grid ColumnDefinitions="*,40,*" Margin="0,10,0,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="50" />
-            <RowDefinition Height="50" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <RelativePanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
