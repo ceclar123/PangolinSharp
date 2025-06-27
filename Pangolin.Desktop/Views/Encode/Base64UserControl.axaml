@@ -17,12 +17,10 @@
         </Grid.RowDefinitions>
         <TextBox Text="{Binding From}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" Margin="5" Grid.Column="0" Grid.Row="0" />
-        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2" Grid.Column="0" Grid.Row="1" Margin="0,1,0,1">
-            <StackPanel Height="50" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <Button Command="{Binding CmdEncode}" Classes="Primary" Margin="0,0,5,0">编码</Button>
-                <Button Command="{Binding CmdDecode}" Classes="Secondary">解码</Button>
-            </StackPanel>
-        </Border>
+        <StackPanel Height="50" Grid.Column="0" Grid.Row="1" Margin="5,1,0,1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button Command="{Binding CmdEncode}" Width="50" Classes="Primary" Margin="0,0,5,0">编码</Button>
+            <Button Command="{Binding CmdDecode}" Width="50" Classes="Secondary">解码</Button>
+        </StackPanel>
         <TextBox Text="{Binding To}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" Margin="5" Grid.Column="0" Grid.Row="2" />
     </Grid>

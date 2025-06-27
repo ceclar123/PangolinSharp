@@ -14,7 +14,7 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding JsonUrl, Mode=TwoWay}" HorizontalAlignment="Stretch" Watermark="JSON文件链接"
+        <TextBox Text="{Binding JsonUrl, Mode=TwoWay}" HorizontalAlignment="Stretch" Watermark="JSON文件链接" Height="30"
                  Margin="5" Grid.Column="0" Grid.Row="0" />
         <Button Content="加载" Command="{Binding CmdLoadJson}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Classes="Primary" Margin="0,0,5,0" />
         <Button Content="下载" Command="{Binding CmdBrowseFilePath}" HorizontalAlignment="Stretch" Grid.Column="2"

@@ -45,9 +45,15 @@
 
     <Style Selector="TextBlock">
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Label">
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Padding" Value="4,1" />
+        <Setter Property="Margin" Value="0,0,0,4" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="TextBox">
@@ -55,7 +61,7 @@
         <Setter Property="Padding" Value="4,1" />
         <Setter Property="Margin" Value="0,0,0,4" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="SelectionForegroundBrush" Value="White" />
     </Style>
 
@@ -63,7 +69,7 @@
     <Style Selector="Button">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Height" Value="20" />
-        <Setter Property="Margin" Value="0,4" />
+        <Setter Property="Margin" Value="5,2" />
         <Setter Property="Padding" Value="4,0,4,2" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -72,7 +78,7 @@
     <Style Selector="Button.clear">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Height" Value="20" />
-        <Setter Property="Margin" Value="0,4" />
+        <Setter Property="Margin" Value="5,2" />
         <Setter Property="Padding" Value="4,0,4,2" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -100,7 +106,7 @@
     <Style Selector="ComboBox">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="MinHeight" Value="20" />
-        <Setter Property="Height" Value="20" />
+        <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0,4" />
         <Setter Property="Padding" Value="4,0,0,2" />
     </Style>

@@ -13,12 +13,12 @@
         <TextBox x:Name="TxtJsonString" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Height="200"
                  AcceptsReturn="True" TextWrapping="Wrap" TextAlignment="Start" Margin="5" Grid.Column="0" Grid.Row="0" />
         <RelativePanel Height="45" Grid.Column="0" Grid.Row="1" Margin="5">
-            <Button x:Name="BtnCheck" Content="校验" Width="60" Height="40" Click="BtnCheck_OnClick" Classes="Primary" Margin="0,0,5,0" />
-            <Button x:Name="BtnExport" Content="导出" Width="60" Height="40" RelativePanel.RightOf="BtnCheck"
+            <Button x:Name="BtnCheck" Content="校验" Width="60" Click="BtnCheck_OnClick" Classes="Primary" Margin="0,0,5,0" />
+            <Button x:Name="BtnExport" Content="导出" Width="60" RelativePanel.RightOf="BtnCheck"
                     Click="BtnExport_OnClick" Classes="Secondary" Margin="0,0,5,0" />
-            <Label x:Name="LblSplit" Content="分隔符:" Width="60" Height="40" VerticalContentAlignment="Center"
+            <Label x:Name="LblSplit" Content="分隔符:" Width="60" VerticalContentAlignment="Center"
                    RelativePanel.RightOf="BtnExport" />
-            <TextBox x:Name="TxtSplit" Width="100" Height="40" Watermark="默认tab符" RelativePanel.RightOf="LblSplit" />
+            <TextBox x:Name="TxtSplit" Width="100" Height="30" Watermark="默认tab符" RelativePanel.RightOf="LblSplit" />
         </RelativePanel>
         <DataGrid x:Name="JsonDataGrid" AutoGenerateColumns="False"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
