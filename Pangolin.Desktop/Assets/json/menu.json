@@ -108,6 +108,17 @@
         "Header": "JSON转实体",
         "Type": "MenuItem",
         "UserControl": "json/convert-entity-view.UserControl"
+      },
+      {
+        "Name": "m2_4",
+        "Type": "Separator"
+      },
+      {
+        "Name": "m2_5",
+        "Header": "CSV转JSON",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Json.CsvConvertJsonUserControl",
+        "ViewModel": ""
       }
     ]
   },
