@@ -15,13 +15,22 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding From}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
-                 VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" Margin="5" Grid.Column="0" Grid.Row="0" />
-        <StackPanel Height="50" Grid.Column="0" Grid.Row="1" Margin="5,1,0,1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <Button Command="{Binding CmdCompress}" Classes="Primary" Width="50" Margin="0,0,5,0">压缩</Button>
-            <Button Command="{Binding CmdDecompress}" Classes="Secondary" Width="50">解压</Button>
-        </StackPanel>
-        <TextBox Text="{Binding To}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
-                 VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" Margin="5" Grid.Column="0" Grid.Row="2" />
+        <HeaderedContentControl Margin="5" Grid.Column="0" Grid.Row="0" Header="输入" Classes="GroupBox">
+            <TextBox Text="{Binding From}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="5,0,5,0" Grid.Column="0" Grid.Row="1" Classes="GroupBox"
+                                VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button Command="{Binding CmdCompress}" Classes="Primary" Width="50" Margin="0,0,5,0">压缩</Button>
+                <Button Command="{Binding CmdDecompress}" Classes="Secondary" Width="50">解压</Button>
+            </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="5" Grid.Column="0" Grid.Row="2" Header="输出" Classes="GroupBox">
+            <TextBox Text="{Binding To}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+        </HeaderedContentControl>
     </Grid>
 </UserControl>

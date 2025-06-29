@@ -10,16 +10,23 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="TxtCsvString" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Height="200"
-                 AcceptsReturn="True" TextWrapping="Wrap" TextAlignment="Start" Margin="5" Grid.Column="0" Grid.Row="0" />
-        <RelativePanel Grid.Column="0" Grid.Row="1" Margin="5" VerticalAlignment="Center">
-            <Button x:Name="BtnCheck" Content="校验" Width="60" Click="BtnCheck_OnClick" Classes="Primary" Margin="0,0,5,0" />
-            <Button x:Name="BtnExport" Content="导出" Width="60" RelativePanel.RightOf="BtnCheck"
-                    Click="BtnExport_OnClick" Classes="Secondary" Margin="0,0,5,0" />
-            <Label x:Name="LblSplit" Content="分隔符:" Width="60" VerticalContentAlignment="Center"
-                   RelativePanel.RightOf="BtnExport" />
-            <TextBox x:Name="TxtSplit" Width="100" Height="30" Watermark="默认tab符" RelativePanel.RightOf="LblSplit" />
-        </RelativePanel>
+        <HeaderedContentControl Margin="5" Grid.Column="0" Grid.Row="0" Header="CSV字符串" Classes="GroupBox">
+            <TextBox x:Name="TxtCsvString" VerticalAlignment="Stretch" VerticalContentAlignment="Top"
+                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                     AcceptsReturn="True" TextWrapping="Wrap" TextAlignment="Start" />
+        </HeaderedContentControl>
+        <HeaderedContentControl Margin="5" Grid.Column="0" Grid.Row="1" Classes="GroupBox" VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+            <RelativePanel Height="40">
+                <Button x:Name="BtnCheck" Content="校验" Width="60" Click="BtnCheck_OnClick" Classes="Primary"
+                        Margin="0,0,5,0" />
+                <Button x:Name="BtnExport" Content="导出" Width="60" RelativePanel.RightOf="BtnCheck"
+                        Click="BtnExport_OnClick" Classes="Secondary" Margin="0,0,5,0" />
+                <Label x:Name="LblSplit" Content="分隔符:" Width="60" VerticalContentAlignment="Center"
+                       RelativePanel.RightOf="BtnExport" />
+                <TextBox x:Name="TxtSplit" Width="100" Height="30" Watermark="默认tab符" RelativePanel.RightOf="LblSplit" />
+            </RelativePanel>
+        </HeaderedContentControl>
         <DataGrid x:Name="DataGridCsv" AutoGenerateColumns="False"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   Margin="5"

@@ -59,7 +59,7 @@
     <Style Selector="TextBox">
         <Setter Property="MinHeight" Value="20" />
         <Setter Property="Padding" Value="4,1" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Margin" Value="0,0,0,2" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="SelectionForegroundBrush" Value="White" />
@@ -124,5 +124,49 @@
     <Style Selector="DataGridCell">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="MinHeight" Value="20" />
+    </Style>
+
+    <!-- GroupBox样式 -->
+    <Style Selector="HeaderedContentControl.GroupBox">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Header -->
+                    <Border
+                        ZIndex="1"
+                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                        Padding="5,0,5,0"
+                        Margin="5,0,0,0">
+                        <TextBlock
+                            Text="{TemplateBinding Header}"
+                            FontWeight="Bold" />
+                    </Border>
+
+                    <!-- Content Area -->
+                    <Border
+                        Grid.RowSpan="2"
+                        Padding="0,5,0,0"
+                        Grid.ColumnSpan="2"
+                        CornerRadius="4"
+                        Margin="0,10,0,0"
+                        BorderBrush="#d1e7ff"
+                        BorderThickness="1">
+                        <ContentPresenter
+                            Name="PART_ContentPresenter"
+                            Padding="8"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
     </Style>
 </Styles>

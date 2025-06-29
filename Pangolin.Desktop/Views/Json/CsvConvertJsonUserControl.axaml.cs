@@ -31,16 +31,16 @@ public partial class CsvConvertJsonUserControl : UserControlBase
 
     private async void BtnCheck_OnClick(object? sender, RoutedEventArgs e)
     {
-        string csvString = this.TxtCsvString.Text ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(csvString))
-        {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this.ParentWindow);
-            return;
-        }
-
         try
         {
+            string csvString = this.TxtCsvString.Text ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(csvString))
+            {
+                await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info,
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this.ParentWindow);
+                return;
+            }
+
             string split = this.TxtSplit.Text ?? string.Empty;
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
             {

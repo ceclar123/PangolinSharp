@@ -3,7 +3,7 @@ using Pangolin.Utility;
 
 namespace PangolinUnitTest;
 
-public class Tests
+public class UnitTests1
 {
     [SetUp]
     public void Setup()
