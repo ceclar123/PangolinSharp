@@ -44,11 +44,11 @@ namespace Pangolin.Desktop.Views
             {
                 TypeInfoResolver = MenuItemDtoGenerationContext.Default
             };
-            List<MenuItemDTO>? list = JsonSerializer.Deserialize(Properties.Resources.MenuJsonData, typeof(List<MenuItemDTO>), sourceGenOptions) as List<MenuItemDTO>;
+            List<MenuItemDto>? list = JsonSerializer.Deserialize(Properties.Resources.MenuJsonData, typeof(List<MenuItemDto>), sourceGenOptions) as List<MenuItemDto>;
             if (list is not null)
             {
                 menu?.Items.Clear();
-                foreach (MenuItemDTO item in list)
+                foreach (MenuItemDto item in list)
                 {
                     if (ObjectUtil.IsNull(item))
                     {
@@ -65,7 +65,7 @@ namespace Pangolin.Desktop.Views
         }
 
 
-        private object? GetSubMenuItem(MenuItemDTO current)
+        private object? GetSubMenuItem(MenuItemDto current)
         {
             if (ObjectUtil.IsNull(current))
             {
@@ -87,7 +87,7 @@ namespace Pangolin.Desktop.Views
                 {
                     if (current.Items is not null)
                     {
-                        foreach (MenuItemDTO child in current.Items)
+                        foreach (MenuItemDto child in current.Items)
                         {
                             if (ObjectUtil.IsNull(child))
                             {

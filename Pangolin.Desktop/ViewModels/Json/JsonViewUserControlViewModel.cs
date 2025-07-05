@@ -88,7 +88,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
         {
             await Task.Run(() =>
             {
-                byte[] bytes = this.DownloadImageAsync(JsonUrl);
+                byte[] bytes = this.DownloadImageAsync(JsonUrl ?? string.Empty);
                 JsonString = Encoding.UTF8.GetString(bytes);
                 // 通知改变
                 this.RaisePropertyChanged(nameof(JsonString));

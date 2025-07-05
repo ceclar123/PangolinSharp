@@ -83,7 +83,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
         {
             await Task.Run(() =>
             {
-                byte[] imageBytes = this.DownloadImageAsync(ImageUrl);
+                byte[] imageBytes = this.DownloadImageAsync(ImageUrl ?? string.Empty);
                 using var ms = new MemoryStream(imageBytes);
                 ImageSource = new Bitmap(ms);
                 // 通知改变

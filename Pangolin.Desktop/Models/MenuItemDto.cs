@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Pangolin.Desktop.Models
 {
     [Serializable]
-    public class MenuItemDTO
+    public class MenuItemDto
     {
         public string? Name { get; set; }
 
@@ -32,6 +32,6 @@ namespace Pangolin.Desktop.Models
         /// <summary>
         /// 子节点
         /// </summary>
-        public List<MenuItemDTO>? Items { get; set; }
+        public List<MenuItemDto>? Items { get; set; }
     }
 }

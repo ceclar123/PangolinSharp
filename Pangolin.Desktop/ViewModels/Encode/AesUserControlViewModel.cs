@@ -26,13 +26,13 @@ public class AesUserControlViewModel : ViewModelBase
 
     public AesPaddingItem SelectedPadding { get; set; }
 
-    public ObservableCollection<SelectItemDTO> KeyItems { get; } = new ObservableCollection<SelectItemDTO>() { new SelectItemDTO(16, "16字节"), new SelectItemDTO(24, "24字节"), new SelectItemDTO(32, "32字节") };
-    public ObservableCollection<SelectItemDTO> IvItems { get; } = new ObservableCollection<SelectItemDTO>() { new SelectItemDTO(16, "16字节") };
+    public ObservableCollection<SelectItemDto> KeyItems { get; } = new ObservableCollection<SelectItemDto>() { new SelectItemDto(16, "16字节"), new SelectItemDto(24, "24字节"), new SelectItemDto(32, "32字节") };
+    public ObservableCollection<SelectItemDto> IvItems { get; } = new ObservableCollection<SelectItemDto>() { new SelectItemDto(16, "16字节") };
     public string Plaintext { get; set; } = string.Empty;
     public string Ciphertext { get; set; } = string.Empty;
 
-    public SelectItemDTO SelectedKey { get; set; }
-    public SelectItemDTO SelectedIv { get; set; }
+    public SelectItemDto SelectedKey { get; set; }
+    public SelectItemDto SelectedIv { get; set; }
 
     public string Key { get; set; } = string.Empty;
 

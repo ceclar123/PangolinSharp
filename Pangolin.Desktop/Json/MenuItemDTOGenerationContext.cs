@@ -4,7 +4,7 @@ using Pangolin.Desktop.Models;
 namespace Pangolin.Desktop.Json;
 
 [JsonSourceGenerationOptions(WriteIndented = false)]
-[JsonSerializable(typeof(MenuItemDTO))]
+[JsonSerializable(typeof(MenuItemDto))]
 public partial class MenuItemDtoGenerationContext : JsonSerializerContext
 {
 }

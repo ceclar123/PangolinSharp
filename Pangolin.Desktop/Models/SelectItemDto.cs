@@ -3,16 +3,16 @@ using System;
 namespace Pangolin.Desktop.Models;
 
 [Serializable]
-public class SelectItemDTO
+public class SelectItemDto
 {
     public int Code { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public SelectItemDTO()
+    public SelectItemDto()
     {
     }
 
-    public SelectItemDTO(int code, string name)
+    public SelectItemDto(int code, string? name)
     {
         Code = code;
         Name = name;
