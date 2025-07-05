@@ -32,7 +32,8 @@
         "Name": "m1_5",
         "Header": "Deflate",
         "Type": "MenuItem",
-        "UserControl": "encode/deflate-view.UserControl"
+        "UserControl": "Pangolin.Desktop.Views.Encode.DeflateUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Encode.DeflateUserControlViewModel"
       },
       {
         "Name": "m1_6",

@@ -32,9 +32,8 @@
     </Style>
 
     <Style Selector="TabItem:selected">
-        <Setter Property="Background" Value="#d1e7ff" />
         <Setter Property="BorderBrush" Value="#F3BF79" />
-        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="ContextMenu MenuItem">

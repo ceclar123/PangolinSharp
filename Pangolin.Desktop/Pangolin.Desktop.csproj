@@ -16,6 +16,7 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
         <AvaloniaResource Include="MacOSPublish\tray.icns" />
+        <AvaloniaResource Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +27,7 @@
         <None Remove="Assets\pangolin_32.ico" />
         <None Remove="Assets\pangolin_48.ico" />
         <None Remove="Assets\pangolin_64.ico" />
+        <None Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -67,6 +69,7 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
+        <Compile Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -74,6 +77,7 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -81,5 +85,13 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="Config\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Remove="Config\**" />
     </ItemGroup>
 </Project>
