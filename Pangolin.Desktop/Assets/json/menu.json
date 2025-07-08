@@ -106,16 +106,24 @@
       },
       {
         "Name": "m2_3",
-        "Header": "JSON转实体",
+        "Header": "JSON转Java实体",
         "Type": "MenuItem",
-        "UserControl": "json/convert-entity-view.UserControl"
+        "UserControl": "Pangolin.Desktop.Views.Json.JsonConvertJavaUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Json.JsonConvertJavaUserControlViewModel"
       },
       {
         "Name": "m2_4",
-        "Type": "Separator"
+        "Header": "JSON转C#实体",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Json.JsonConvertCsharpUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Json.JsonConvertCsharpUserControlViewModel"
       },
       {
         "Name": "m2_5",
+        "Type": "Separator"
+      },
+      {
+        "Name": "m2_6",
         "Header": "CSV转JSON",
         "Type": "MenuItem",
         "UserControl": "Pangolin.Desktop.Views.Json.CsvConvertJsonUserControl",
