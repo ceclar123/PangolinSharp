@@ -5,6 +5,26 @@ namespace Pangolin.Utility;
 
 public static class HttpUtil
 {
+    public static bool IsValidHttpUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return false;
+        }
+
+        try
+        {
+            var uri = new Uri(url);
+
+            // 检查Scheme是否为http或https
+            return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     public static RestResponse<string> DoHead(string url)
     {
         var options = new RestClientOptions();

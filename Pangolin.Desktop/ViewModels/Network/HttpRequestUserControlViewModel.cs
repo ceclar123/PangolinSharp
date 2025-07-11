@@ -6,7 +6,9 @@ using System.Net;
 using System.Reactive;
 using System.Threading.Tasks;
 using Pangolin.Desktop.Models;
+using Pangolin.Utility;
 using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 using RestSharp;
 
 namespace Pangolin.Desktop.ViewModels.Network;
@@ -20,7 +22,20 @@ public class HttpRequestUserControlViewModel : ViewModelBase
     public HttpRequestSettingDto Setting { get; set; }
 
 
-    public string RequestUrl { get; set; } = string.Empty;
+    private string? _requestUrl = string.Empty;
+
+    public string? RequestUrl
+    {
+        get => _requestUrl;
+        set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                this.RaiseAndSetIfChanged(ref _requestUrl, value);
+            }
+        }
+    }
+
     public ReactiveCommand<Unit, Unit> CmdSend { get; protected set; }
 
     public HttpRequestUserControlViewModel()
@@ -33,6 +48,9 @@ public class HttpRequestUserControlViewModel : ViewModelBase
         };
 
         CmdSend = ReactiveCommand.CreateFromTask(Send);
+
+        this.ValidationRule(
+            viewModel => viewModel.RequestUrl, it => string.IsNullOrWhiteSpace(it) || HttpUtil.IsValidHttpUrl(it), "非法请求地址");
     }
 
 

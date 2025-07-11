@@ -4,14 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Pangolin.Desktop.ViewModels.Network"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:local="clr-namespace:Pangolin.Desktop.Converter"
              x:Class="Pangolin.Desktop.Views.Network.HttpRequestUserControl"
              x:DataType="vm:HttpRequestUserControlViewModel">
     <Design.DataContext>
         <vm:HttpRequestUserControlViewModel />
     </Design.DataContext>
+    <UserControl.Resources>
+        <local:String2IntConverter x:Key="String2IntConverter" />
+    </UserControl.Resources>
     <Grid ColumnDefinitions="*" Margin="5,10,0,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
             <RowDefinition Height="1" />
             <RowDefinition Height="*" />
@@ -65,7 +69,7 @@
                         </TextBlock>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1" Classes="grid-cell-light-gray">
-                        <TextBox Text="{Binding Path=Setting.Timeout}" />
+                        <NumericUpDown Value="{Binding Path=Setting.Timeout}" Watermark="超时时间(秒)" Increment="1" Minimum="1" Maximum="200" FormatString="0" ClipValueToMinMax="True" ParsingNumberStyle="Integer" />
                     </Border>
                 </Grid>
             </TabItem>
