@@ -168,4 +168,13 @@
             </ControlTemplate>
         </Setter>
     </Style>
+
+    <!-- Grid边框样式 -->
+    <Style Selector="Border.grid-cell-light-gray">
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="-0.5" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
 </Styles>

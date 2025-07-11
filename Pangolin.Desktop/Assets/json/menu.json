@@ -180,5 +180,19 @@
         "ViewModel": "Pangolin.Desktop.ViewModels.Image.ImageViewUserControlViewModel"
       }
     ]
+  },
+  {
+    "Name": "m5",
+    "Header": "网络",
+    "Type": "MenuItem",
+    "Items": [
+      {
+        "Name": "m5_1",
+        "Header": "HTTP请求",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Network.HttpRequestUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Network.HttpRequestUserControlViewModel"
+      }
+    ]
   }
 ]
