@@ -32,13 +32,29 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBox Grid.Column="1" Grid.Row="0" Height="30" Margin="0,0,0,0" Text="{Binding RequestUrl, Mode=TwoWay}" Watermark="请求链接" />
+            <TextBox Grid.Column="1" Grid.Row="0" Height="30" Margin="0,0,0,0" Text="{Binding HttpReq.RequestUrl, Mode=TwoWay}" Watermark="请求链接" />
             <Button Grid.Column="2" Grid.Row="0" Height="30" Width="70" Margin="5,0,5,0" Content="Send" Command="{Binding CmdSend}" Classes="Primary" />
         </Grid>
         <TabControl Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TabItem Header="Params" />
+            <TabItem Header="Params">
+                <DataGrid ItemsSource="{Binding  Path=HttpReq.Params,Mode=TwoWay}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                          VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding  Path=Key,Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Value" Width="*" Binding="{Binding  Path=Value,Mode=TwoWay}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
             <TabItem Header="Authorization" />
-            <TabItem Header="Headers" />
+            <TabItem Header="Headers">
+                <DataGrid ItemsSource="{Binding  Path=HttpReq.Headers,Mode=TwoWay}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                          VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding  Path=Key,Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Value" Width="*" Binding="{Binding  Path=Value,Mode=TwoWay}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
             <TabItem Header="Body" />
             <TabItem Header="Settings">
                 <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
@@ -79,15 +95,48 @@
             <TabItem Header="Body">
                 <TabControl>
                     <TabItem Header="Pretty">
-                        <TextBlock Text="xxxx扎哈哈" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBox Text="{Binding Path=HttpResp.PrettyBody}" VerticalAlignment="Stretch" TextWrapping="Wrap" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" />
                     </TabItem>
                     <TabItem Header="Raw">
-                        <TextBlock Text="xxxx嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBox Text="{Binding Path=HttpResp.RawBody}" VerticalAlignment="Stretch" TextWrapping="Wrap" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" />
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Cookies" />
-            <TabItem Header="Headers" />
+            <TabItem Header="Cookies">
+                <DataGrid ItemsSource="{Binding HttpResp.Cookies}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                          VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="*"
+                                            Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="Value" Width="*"
+                                            Binding="{Binding Value}" />
+                        <DataGridTextColumn Header="Domain" Width="*"
+                                            Binding="{Binding Domain}" />
+                        <DataGridTextColumn Header="Path" Width="*"
+                                            Binding="{Binding Path}" />
+                        <DataGridTextColumn Header="Expires" Width="*"
+                                            Binding="{Binding Expires}" />
+                        <DataGridTextColumn Header="Expired" Width="*"
+                                            Binding="{Binding Expired}" />
+                        <DataGridTextColumn Header="HttpOnly" Width="*"
+                                            Binding="{Binding HttpOnly}" />
+                        <DataGridTextColumn Header="Secure" Width="*"
+                                            Binding="{Binding Secure}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Headers">
+                <DataGrid ItemsSource="{Binding HttpResp.Headers}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                          VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="*"
+                                            Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="Value" Width="*"
+                                            Binding="{Binding Value}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="{Binding Path=HttpResp.Status}" IsEnabled="False" />
         </TabControl>
     </Grid>
 </UserControl>
