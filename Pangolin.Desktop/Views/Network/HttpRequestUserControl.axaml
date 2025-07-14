@@ -25,7 +25,7 @@
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <ComboBox Grid.Row="0" Grid.Column="0" Height="30" Width="70" Margin="0,0,0,0"
-                      ItemsSource="{Binding Path=HttpMethodItems}" SelectedValue="{Binding Path=SelectedHttpMethod}">
+                      ItemsSource="{Binding Path=HttpMethodItems}" SelectedValue="{Binding Path=HttpReq.SelectedHttpMethod}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Left" />
@@ -55,7 +55,44 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Header="Body" />
+            <TabItem Header="Body">
+                <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedIndex="{Binding Path=HttpReq.SelectBodyTabIndex, Mode=TwoWay}">
+                    <TabItem Header="none" />
+                    <TabItem Header="form-data">
+                        <DataGrid ItemsSource="{Binding  Path=HttpReq.FormDataParams,Mode=TwoWay}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                                  VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Key" Width="*" Binding="{Binding  Path=Key,Mode=TwoWay}" />
+                                <DataGridTextColumn Header="Value" Width="*" Binding="{Binding  Path=Value,Mode=TwoWay}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                    <TabItem Header="x-www-form-urlencoded">
+                        <DataGrid ItemsSource="{Binding  Path=HttpReq.WwwFormUrlencodedParams,Mode=TwoWay}" GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                                  VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Key" Width="*" Binding="{Binding  Path=Key,Mode=TwoWay}" />
+                                <DataGridTextColumn Header="Value" Width="*" Binding="{Binding  Path=Value,Mode=TwoWay}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                    <TabItem Header="raw">
+                        <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <ComboBox DockPanel.Dock="Top" Width="80" Height="30" Margin="0,2,0,2" VerticalContentAlignment="Center"
+                                      ItemsSource="{Binding Path=MediaTypes}" SelectedValue="{Binding Path=HttpReq.SelectedMediaType}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Path=Value}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBox DockPanel.Dock="Bottom" Text="{Binding Path=HttpReq.RequestBody}" VerticalAlignment="Stretch" TextWrapping="Wrap" HorizontalContentAlignment="Left"
+                                     VerticalContentAlignment="Top" />
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="binary" />
+                </TabControl>
+            </TabItem>
             <TabItem Header="Settings">
                 <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
                     <Grid.RowDefinitions>

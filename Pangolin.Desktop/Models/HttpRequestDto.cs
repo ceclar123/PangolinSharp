@@ -33,9 +33,21 @@ public class HttpRequestDto : ReactiveValidationObject
         }
     }
 
+    private string? _requestBody = string.Empty;
+
+    public string? RequestBody
+    {
+        get => _requestBody;
+        set => this.RaiseAndSetIfChanged(ref _requestBody, value);
+    }
+
+    public SelectItemDto? SelectedHttpMethod { get; set; }
+    public KeyValueDto<string, string>? SelectedMediaType { get; set; }
+    public int SelectBodyTabIndex { get; set; } = 0;
     public ObservableCollection<KeyValueDto<string, string>> Params { get; set; }
     public ObservableCollection<KeyValueDto<string, string>> Headers { get; set; }
-
+    public ObservableCollection<KeyValueDto<string, string>> FormDataParams { get; set; }
+    public ObservableCollection<KeyValueDto<string, string>> WwwFormUrlencodedParams { get; set; }
 
     public HttpRequestDto()
     {
@@ -43,16 +55,11 @@ public class HttpRequestDto : ReactiveValidationObject
         Params = [AddParams(string.Empty, string.Empty)];
         // Params.CollectionChanged += Params_NotifyCollectionChangedEventHandler;
         Headers = [AddHeaders(string.Empty, string.Empty)];
-
+        FormDataParams = [AddFormDataParams(string.Empty, string.Empty)];
+        WwwFormUrlencodedParams = [AddWwwFormUrlencodedParams(string.Empty, string.Empty)];
         this.ValidationRule(
             viewModel => viewModel.RequestUrl, it => string.IsNullOrWhiteSpace(it) || HttpUtil.IsValidHttpUrl(it), "非法请求地址");
     }
-
-    public static HttpRequestDto Empty()
-    {
-        return new HttpRequestDto();
-    }
-
 
     #region 请求地址变更,更新Params数据
 
@@ -235,6 +242,62 @@ public class HttpRequestDto : ReactiveValidationObject
             if (!find)
             {
                 Headers.Add(AddHeaders(string.Empty, string.Empty));
+            }
+        }
+    }
+
+    #endregion
+
+    #region FormDataParams
+
+    private KeyValueDto<string, string> AddFormDataParams(string key, string value)
+    {
+        KeyValueDto<string, string> item = new KeyValueDto<string, string>()
+        {
+            Key = key,
+            Value = value
+        };
+        item.PropertyChanged += FormDataParams_PropertyChangedEventHandler;
+
+        return item;
+    }
+
+    public void FormDataParams_PropertyChangedEventHandler(object? sender, PropertyChangedEventArgs e)
+    {
+        if ("Key".Equals(e.PropertyName))
+        {
+            bool find = FormDataParams.Any(it => string.IsNullOrWhiteSpace(it.Key));
+            if (!find)
+            {
+                FormDataParams.Add(AddFormDataParams(string.Empty, string.Empty));
+            }
+        }
+    }
+
+    #endregion
+
+    #region WwwFormUrlencodedParams
+
+    private KeyValueDto<string, string> AddWwwFormUrlencodedParams(string key, string value)
+    {
+        KeyValueDto<string, string> item = new KeyValueDto<string, string>()
+        {
+            Key = key,
+            Value = value
+        };
+        item.PropertyChanged += WwwFormUrlencodedParams_PropertyChangedEventHandler;
+
+        return item;
+    }
+
+    public void WwwFormUrlencodedParams_PropertyChangedEventHandler(object? sender, PropertyChangedEventArgs e)
+    {
+        if ("Key".Equals(e.PropertyName))
+        {
+            bool find = WwwFormUrlencodedParams.Any(it => string.IsNullOrWhiteSpace(it.Key));
+            if (!find)
+            {
+                WwwFormUrlencodedParams.Add(AddWwwFormUrlencodedParams(string.Empty, string.Empty));
             }
         }
     }

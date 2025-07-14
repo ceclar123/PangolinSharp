@@ -24,9 +24,8 @@ namespace Pangolin.Desktop.ViewModels.Network;
 public class HttpRequestUserControlViewModel : ViewModelBase
 {
     public ObservableCollection<SelectItemDto> HttpMethodItems { get; } = GetHttpMethodItems();
-    public SelectItemDto SelectedHttpMethod { get; set; }
-
     public ObservableCollection<SelectItemDto> HttpVersionItems { get; } = GetHttpVersionItems();
+    public ObservableCollection<KeyValueDto<string, string>> MediaTypes { get; set; } = GetMediaTypes();
     public HttpRequestSettingDto Setting { get; set; }
     public HttpRequestDto HttpReq { get; set; }
     public HttpResponseDto HttpResp { get; set; }
@@ -36,13 +35,16 @@ public class HttpRequestUserControlViewModel : ViewModelBase
 
     public HttpRequestUserControlViewModel()
     {
-        SelectedHttpMethod = HttpMethodItems.First();
         Setting = new HttpRequestSettingDto
         {
             SelectedVersionMethod = HttpVersionItems.First(),
             Timeout = 3
         };
-        HttpReq = HttpRequestDto.Empty();
+        HttpReq = new HttpRequestDto
+        {
+            SelectedHttpMethod = HttpMethodItems.First(),
+            SelectedMediaType = MediaTypes.First()
+        };
         HttpResp = HttpResponseDto.Empty();
 
         CmdSend = ReactiveCommand.CreateFromTask(Send);
@@ -102,6 +104,44 @@ public class HttpRequestUserControlViewModel : ViewModelBase
         return new ObservableCollection<SelectItemDto>(list);
     }
 
+    private static ObservableCollection<KeyValueDto<string, string>> GetMediaTypes()
+    {
+        List<KeyValueDto<string, string>> list =
+        [
+            new KeyValueDto<string, string>
+            {
+                Key = "text/plain",
+                Value = "Text"
+            },
+
+            new KeyValueDto<string, string>
+            {
+                Key = "application/javascript",
+                Value = "JavaScript"
+            },
+
+            new KeyValueDto<string, string>
+            {
+                Key = "application/json",
+                Value = "JSON"
+            },
+
+            new KeyValueDto<string, string>
+            {
+                Key = "text/html",
+                Value = "HTML"
+            },
+
+            new KeyValueDto<string, string>
+            {
+                Key = "application/xml",
+                Value = "XML"
+            }
+        ];
+
+        return new ObservableCollection<KeyValueDto<string, string>>(list);
+    }
+
 
     private async Task Send()
     {
@@ -134,7 +174,7 @@ public class HttpRequestUserControlViewModel : ViewModelBase
                 stopwatch.Start();
 
                 RestRequest request = new RestRequest(HttpReq.RequestUrl);
-                request.Method = _httpMethodDic.GetValueOrDefault(SelectedHttpMethod.Code, Method.Get);
+                request.Method = HttpReq.SelectedHttpMethod != null ? _httpMethodDic.GetValueOrDefault(HttpReq.SelectedHttpMethod.Code, Method.Get) : Method.Get;
                 request.Version = Setting.SelectedVersionMethod is null ? HttpVersion.Version11 : HttpVersionDic.GetValueOrDefault(Setting.SelectedVersionMethod.Code, HttpVersion.Version11);
                 request.Timeout = TimeSpan.FromSeconds(Setting.Timeout ?? 3);
                 foreach (var header in HttpReq.Headers)
