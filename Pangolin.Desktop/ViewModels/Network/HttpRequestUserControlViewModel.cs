@@ -137,6 +137,14 @@ public class HttpRequestUserControlViewModel : ViewModelBase
                 request.Method = _httpMethodDic.GetValueOrDefault(SelectedHttpMethod.Code, Method.Get);
                 request.Version = Setting.SelectedVersionMethod is null ? HttpVersion.Version11 : HttpVersionDic.GetValueOrDefault(Setting.SelectedVersionMethod.Code, HttpVersion.Version11);
                 request.Timeout = TimeSpan.FromSeconds(Setting.Timeout ?? 3);
+                foreach (var header in HttpReq.Headers)
+                {
+                    if (StringUtil.AnyNotBlank(header.Key, header.Value))
+                    {
+                        request.AddHeader(header.Key ?? string.Empty, header.Value ?? string.Empty);
+                    }
+                }
+
                 RestResponse<string> response = HttpUtil.Do(request);
 
                 stopwatch.Stop();

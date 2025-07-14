@@ -42,7 +42,7 @@ public class HttpRequestDto : ReactiveValidationObject
         RequestUrl = string.Empty;
         Params = [AddParams(string.Empty, string.Empty)];
         // Params.CollectionChanged += Params_NotifyCollectionChangedEventHandler;
-        Headers = new ObservableCollection<KeyValueDto<string, string>>();
+        Headers = [AddHeaders(string.Empty, string.Empty)];
 
         this.ValidationRule(
             viewModel => viewModel.RequestUrl, it => string.IsNullOrWhiteSpace(it) || HttpUtil.IsValidHttpUrl(it), "非法请求地址");
@@ -50,10 +50,7 @@ public class HttpRequestDto : ReactiveValidationObject
 
     public static HttpRequestDto Empty()
     {
-        HttpRequestDto request = new HttpRequestDto();
-        request.Headers.Add(new KeyValueDto<string, string>());
-
-        return request;
+        return new HttpRequestDto();
     }
 
 
@@ -212,6 +209,34 @@ public class HttpRequestDto : ReactiveValidationObject
     public void Params_PropertyChangedEventHandler(object? sender, PropertyChangedEventArgs e)
     {
         TryUpdateRequestUrlByParams();
+    }
+
+    #endregion
+
+    #region headers数据项变更,更新请求地址
+
+    private KeyValueDto<string, string> AddHeaders(string key, string value)
+    {
+        KeyValueDto<string, string> item = new KeyValueDto<string, string>()
+        {
+            Key = key,
+            Value = value
+        };
+        item.PropertyChanged += Headers_PropertyChangedEventHandler;
+
+        return item;
+    }
+
+    public void Headers_PropertyChangedEventHandler(object? sender, PropertyChangedEventArgs e)
+    {
+        if ("Key".Equals(e.PropertyName))
+        {
+            bool find = Headers.Any(it => string.IsNullOrWhiteSpace(it.Key));
+            if (!find)
+            {
+                Headers.Add(AddHeaders(string.Empty, string.Empty));
+            }
+        }
     }
 
     #endregion
