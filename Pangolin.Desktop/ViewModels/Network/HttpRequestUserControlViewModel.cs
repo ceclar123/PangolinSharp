@@ -72,7 +72,7 @@ public class HttpRequestUserControlViewModel : ViewModelBase
             {
                 SelectItemDto item = new SelectItemDto
                 {
-                    Name = it.Value.ToString(),
+                    Name = it.Value.ToString().ToUpper(),
                     Code = it.Key
                 };
                 return item;
