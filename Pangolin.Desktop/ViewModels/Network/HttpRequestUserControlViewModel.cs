@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive;
@@ -185,8 +186,61 @@ public class HttpRequestUserControlViewModel : ViewModelBase
                     }
                 }
 
-                RestResponse<string> response = HttpUtil.Do(request);
+                if (1 == HttpReq.SelectBodyTabIndex)
+                {
+                    // form-data
+                    request.AlwaysMultipartFormData = true;
+                    foreach (var param in HttpReq.FormDataParams)
+                    {
+                        if (StringUtil.IsNotBlank(param.Key))
+                        {
+                            request.AddParameter(param.Key ?? string.Empty, param.Value ?? string.Empty);
+                        }
+                    }
+                }
+                else if (2 == HttpReq.SelectBodyTabIndex)
+                {
+                    // x-www-form-urlencoded
+                    foreach (var param in HttpReq.WwwFormUrlencodedParams)
+                    {
+                        if (StringUtil.IsNotBlank(param.Key))
+                        {
+                            request.AddParameter(param.Key ?? string.Empty, param.Value ?? string.Empty);
+                        }
+                    }
+                }
+                else if (3 == HttpReq.SelectBodyTabIndex)
+                {
+                    // raw
+                    switch (HttpReq.SelectedMediaType?.Key)
+                    {
+                        case "text/plain":
+                            request.AddParameter("text/plain", HttpReq.RequestBody ?? string.Empty, ParameterType.RequestBody);
+                            break;
+                        case "application/javascript":
+                            request.AddParameter("application/javascript", HttpReq.RequestBody ?? string.Empty, ParameterType.RequestBody);
+                            break;
+                        case "application/json":
+                            request.AddStringBody(HttpReq.RequestBody ?? string.Empty, DataFormat.Json);
+                            break;
+                        case "text/html":
+                            request.AddParameter("text/html", HttpReq.RequestBody ?? string.Empty, ParameterType.RequestBody);
+                            break;
+                        case "application/xml":
+                            request.AddParameter("application/xml", HttpReq.RequestBody ?? string.Empty, ParameterType.RequestBody);
+                            break;
+                    }
+                }
+                else if (4 == HttpReq.SelectBodyTabIndex)
+                {
+                    // binary
+                    var filePath = @"C:\abc\test.png";
+                    var fileName = Path.GetFileName(filePath);
+                    var fileBytes = File.ReadAllBytes(filePath);
+                    request.AddFile("file", fileBytes, fileName, ContentType.Binary);
+                }
 
+                RestResponse<string> response = HttpUtil.Do(request);
                 stopwatch.Stop();
 
                 // Status: 200 OK Times: 115 ms  Size:123 kb
