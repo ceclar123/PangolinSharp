@@ -5,10 +5,9 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using DynamicData;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
-using Org.BouncyCastle.Crypto;
 using Pangolin.Desktop.Models;
 using Pangolin.Utility;
 using Pangolin.Utility.Aes;
@@ -18,13 +17,31 @@ namespace Pangolin.Desktop.ViewModels.Encode;
 
 public class AesUserControlViewModel : ViewModelBase
 {
-    public ObservableCollection<AesModeItem> ModeItems { get; } = new ObservableCollection<AesModeItem>(AesUtil.BlockCipherModeList);
+    public ObservableCollection<AesCipherModeItem> CipherModeItems { get; } = new ObservableCollection<AesCipherModeItem>(AesUtil.GetAesCipherModeItemList());
 
-    public AesModeItem SelectedMode { get; set; }
+    private AesCipherModeItem _selectedCipherMode;
 
-    public ObservableCollection<AesPaddingItem> PaddingItems { get; } = new ObservableCollection<AesPaddingItem>(AesUtil.BlockCipherPaddingList);
+    public AesCipherModeItem SelectedCipherMode
+    {
+        get => _selectedCipherMode;
+        set
+        {
+            if (value != null && value != _selectedCipherMode)
+            {
+                _selectedCipherMode = value;
+                // 刷新PaddingMode
+                PaddingModeItems.Clear();
+                PaddingModeItems.AddRange(AesUtil.GetAesPaddingModeItemList(value.Mode));
+                // 默认选中PaddingMode
+                SelectedPaddingMode = PaddingModeItems.First();
+                this.RaisePropertyChanged(nameof(SelectedPaddingMode));
+            }
+        }
+    }
 
-    public AesPaddingItem SelectedPadding { get; set; }
+    public ObservableCollection<AesPaddingModeItem> PaddingModeItems { get; } = new ObservableCollection<AesPaddingModeItem>(AesUtil.GetAesPaddingModeItemList(AesUtil.GetAesCipherModeItemList()[0].Mode));
+
+    public AesPaddingModeItem SelectedPaddingMode { get; set; }
 
     public ObservableCollection<SelectItemDto> KeyItems { get; } = new ObservableCollection<SelectItemDto>() { new SelectItemDto(16, "16字节"), new SelectItemDto(24, "24字节"), new SelectItemDto(32, "32字节") };
     public ObservableCollection<SelectItemDto> IvItems { get; } = new ObservableCollection<SelectItemDto>() { new SelectItemDto(16, "16字节") };
@@ -45,8 +62,8 @@ public class AesUserControlViewModel : ViewModelBase
 
     public AesUserControlViewModel()
     {
-        SelectedMode = ModeItems.First();
-        SelectedPadding = PaddingItems.First();
+        _selectedCipherMode = CipherModeItems.First();
+        SelectedPaddingMode = PaddingModeItems.First();
 
         SelectedKey = KeyItems.First();
         SelectedIv = IvItems.First();
@@ -79,8 +96,8 @@ public class AesUserControlViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Plaintext) || string.IsNullOrWhiteSpace(Key) || string.IsNullOrWhiteSpace(Iv))
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
         else
         {
@@ -88,17 +105,15 @@ public class AesUserControlViewModel : ViewModelBase
             {
                 await Task.Run(() =>
                 {
-                    ICipherParameters cipherParam = SelectedMode.HasIv ? AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)) : AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key));
-                    byte[]? output = AesFactory.GetHandler(SelectedMode.CfgName)?.Encrypt(Encoding.UTF8.GetBytes(Plaintext.Trim()), SelectedPadding.Padding, cipherParam);
-                    Ciphertext = Base64Util.Encode(output ?? []);
+                    Ciphertext = AesUtil.Encrypt(Plaintext.Trim(), Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv), SelectedCipherMode.Mode, SelectedPaddingMode.Padding);
                     // 通知改变
                     this.RaisePropertyChanged(nameof(Ciphertext));
                 });
             }
             catch (Exception e)
             {
-                IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner);
-                await box.ShowWindowDialogAsync(this.ParentWindow);
+                await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                    .ShowWindowDialogAsync(this.ParentWindow);
             }
         }
     }
@@ -107,8 +122,8 @@ public class AesUserControlViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Ciphertext) || string.IsNullOrWhiteSpace(Key) || string.IsNullOrWhiteSpace(Iv))
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner);
-            await box.ShowWindowDialogAsync(this.ParentWindow);
+            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
+                .ShowWindowDialogAsync(this.ParentWindow);
         }
         else
         {
@@ -116,17 +131,15 @@ public class AesUserControlViewModel : ViewModelBase
             {
                 await Task.Run(() =>
                 {
-                    ICipherParameters cipherParam = SelectedMode.HasIv ? AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv)) : AesUtil.GetCipherParam(Encoding.UTF8.GetBytes(Key));
-                    byte[]? output = AesFactory.GetHandler(SelectedMode.CfgName)?.Decrypt(Base64Util.Decode(Ciphertext.Trim()), SelectedPadding.Padding, cipherParam);
-                    Plaintext = Encoding.UTF8.GetString(output ?? []);
+                    Plaintext = AesUtil.Decrypt(Ciphertext.Trim(), Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv), SelectedCipherMode.Mode, SelectedPaddingMode.Padding);
                     // 通知改变
                     this.RaisePropertyChanged(nameof(Plaintext));
                 });
             }
             catch (Exception e)
             {
-                IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner);
-                await box.ShowWindowDialogAsync(this.ParentWindow);
+                await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
+                    .ShowWindowDialogAsync(this.ParentWindow);
             }
         }
     }

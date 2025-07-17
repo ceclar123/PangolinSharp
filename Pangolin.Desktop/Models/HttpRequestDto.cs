@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using DynamicData;
+using NLog;
 using Pangolin.Utility;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
@@ -17,6 +18,7 @@ namespace Pangolin.Desktop.Models;
 public class HttpRequestDto : ReactiveValidationObject
 {
     private readonly object _paramSyncLock = new object();
+    private static Logger _logger = LogManager.GetCurrentClassLogger();
 
     private string? _requestUrl = string.Empty;
 
@@ -73,7 +75,7 @@ public class HttpRequestDto : ReactiveValidationObject
             }
             catch (Exception ex)
             {
-                // 忽略异常
+                _logger.Error($"TryUpdateParamsByRequestUrl failed url:{url}, msg:{ex.Message}, trace:{ex.StackTrace}");
             }
             finally
             {
@@ -138,7 +140,7 @@ public class HttpRequestDto : ReactiveValidationObject
             }
             catch (Exception ex)
             {
-                // 忽略异常
+                _logger.Error($"TryUpdateRequestUrlByParams failed msg:{ex.Message}, trace:{ex.StackTrace}");
             }
             finally
             {

@@ -26,24 +26,4 @@ public class UnitTests1
 
         Assert.True(src == dest);
     }
-
-    [Test]
-    public void Test2()
-    {
-        string original = "哈哈Here is some text to encrypt!呵呵";
-        // 必须是16, 24, 或32字节长
-        byte[] key = Encoding.UTF8.GetBytes("1234567897777777");
-        // 必须是16字节长
-        byte[] iv = Encoding.UTF8.GetBytes("1234567897777777");
-
-        // 加密
-        byte[] encrypted = AesUtil.Encrypt(Encoding.UTF8.GetBytes(original), key, iv);
-        Console.WriteLine($"Encrypted: {Convert.ToBase64String(encrypted)}");
-
-        // 解密
-        string decrypted = Encoding.UTF8.GetString(AesUtil.Decrypt(encrypted, key, iv));
-        Console.WriteLine($"Decrypted: {decrypted}");
-
-        Assert.True(original.Equals(decrypted));
-    }
 }

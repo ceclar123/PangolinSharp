@@ -14,46 +14,47 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
-        <AvaloniaResource Include="MacOSPublish\tray.icns"/>
-        <AvaloniaResource Remove="Config\**"/>
+        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="MacOSPublish\tray.icns" />
+        <AvaloniaResource Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Assets\json\menu.json"/>
-        <None Remove="Assets\pangolin_128.ico"/>
-        <None Remove="Assets\pangolin_16.ico"/>
-        <None Remove="Assets\pangolin_256.ico"/>
-        <None Remove="Assets\pangolin_32.ico"/>
-        <None Remove="Assets\pangolin_48.ico"/>
-        <None Remove="Assets\pangolin_64.ico"/>
-        <None Remove="Config\**"/>
+        <None Remove="Assets\json\menu.json" />
+        <None Remove="Assets\pangolin_128.ico" />
+        <None Remove="Assets\pangolin_16.ico" />
+        <None Remove="Assets\pangolin_256.ico" />
+        <None Remove="Assets\pangolin_32.ico" />
+        <None Remove="Assets\pangolin_48.ico" />
+        <None Remove="Assets\pangolin_64.ico" />
+        <None Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Assets\icon\pangolin_32.ico"/>
+        <Content Include="Assets\icon\pangolin_32.ico" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.5"/>
+        <PackageReference Include="Avalonia" Version="11.2.5" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.5" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
         <!--        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />-->
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5"/>
-        <PackageReference Include="ReactiveUI.Validation" Version="4.1.1"/>
-        <PackageReference Include="CsvHelper" Version="33.0.1"/>
-        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1"/>
-        <PackageReference Include="Semi.Avalonia" Version="11.2.1.8"/>
-        <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8"/>
-        <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8"/>
-        <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4"/>
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
+        <PackageReference Include="NLog" Version="6.0.1" />
+        <PackageReference Include="ReactiveUI.Validation" Version="4.1.1" />
+        <PackageReference Include="CsvHelper" Version="33.0.1" />
+        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
+        <PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
+        <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8" />
+        <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
+        <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pangolin.Utility\Pangolin.Utility.csproj"/>
+        <ProjectReference Include="..\Pangolin.Utility\Pangolin.Utility.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -71,7 +72,7 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
-        <Compile Remove="Config\**"/>
+        <Compile Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -79,7 +80,7 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Remove="Config\**"/>
+        <EmbeddedResource Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -90,10 +91,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaXaml Remove="Config\**"/>
+        <AvaloniaXaml Remove="Config\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Remove="Config\**"/>
+        <AdditionalFiles Remove="Config\**" />
     </ItemGroup>
 </Project>

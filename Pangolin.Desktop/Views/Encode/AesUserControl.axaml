@@ -21,7 +21,7 @@
             <TextBlock x:Name="TbkMode" Text="BlockCipherMode:" VerticalAlignment="Center" HorizontalAlignment="Left"
                        Width="170" Margin="10,0,5,0" />
             <ComboBox x:Name="CbbMode" RelativePanel.RightOf="TbkMode" Margin="0,0,5,0" Width="170"
-                      ItemsSource="{Binding Path=ModeItems}" SelectedValue="{Binding Path=SelectedMode}">
+                      ItemsSource="{Binding Path=CipherModeItems}" SelectedValue="{Binding Path=SelectedCipherMode}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=CfgName}" VerticalAlignment="Center"
@@ -34,10 +34,10 @@
             <TextBlock x:Name="TbkPadding" Text="BlockCipherTbkPadding:" VerticalAlignment="Center"
                        HorizontalAlignment="Left" Width="170" Margin="10,0,5,0" />
             <ComboBox x:Name="CbbPadding" RelativePanel.RightOf="TbkPadding" Margin="0,0,5,0" Width="170"
-                      ItemsSource="{Binding Path=PaddingItems}" SelectedValue="{Binding Path=SelectedPadding}">
+                      ItemsSource="{Binding Path=PaddingModeItems, Mode=TwoWay}" SelectedValue="{Binding Path=SelectedPaddingMode}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Path=CfgName}" VerticalAlignment="Center"
+                        <TextBlock Text="{Binding Path=CfgName, Mode=TwoWay}" VerticalAlignment="Center"
                                    HorizontalAlignment="Left" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
