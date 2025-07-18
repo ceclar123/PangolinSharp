@@ -12,7 +12,8 @@ public static class AesOfbUtil
         using (System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create())
         {
             aes.Key = key;
-            aes.Mode = CipherMode.ECB; // 我们使用ECB模式但自己实现OFB逻辑
+            // 使用ECB模式但自己实现OFB逻辑
+            aes.Mode = CipherMode.ECB; 
             aes.Padding = paddingMode;
 
             byte[] ofbVector = new byte[iv.Length];
@@ -20,7 +21,8 @@ public static class AesOfbUtil
 
             ICryptoTransform encryptor = aes.CreateEncryptor();
 
-            int blockSize = aes.BlockSize / 8; // 块大小（字节）
+            // 块大小（字节）
+            int blockSize = aes.BlockSize / 8; 
             byte[] encryptedBlock = new byte[blockSize];
 
             for (int i = 0; i < plainBytes.Length; i += blockSize)

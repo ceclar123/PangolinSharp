@@ -9,6 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using NLog;
 using Pangolin.Desktop.Json;
 using Pangolin.Desktop.Models;
 using Pangolin.Desktop.ViewModels;
@@ -18,6 +19,8 @@ namespace Pangolin.Desktop.Views
 {
     public partial class MainWindow : Window
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private WindowNotificationManager? _manager;
 
         public MainWindow()
@@ -154,16 +157,23 @@ namespace Pangolin.Desktop.Views
                     HorizontalAlignment = HorizontalAlignment.Left,
                     HorizontalContentAlignment = HorizontalAlignment.Center
                 };
-                UserControl? userControl = this.BuildUserControl(menuItem);
-                if (userControl != null)
+                try
                 {
-                    tabItem.Content = userControl;
-                    tabControl.Items.Add(tabItem);
-                    tabControl.SelectedItem = tabItem;
+                    UserControl? userControl = this.BuildUserControl(menuItem);
+                    if (userControl != null)
+                    {
+                        tabItem.Content = userControl;
+                        tabControl.Items.Add(tabItem);
+                        tabControl.SelectedItem = tabItem;
+                    }
+                    else
+                    {
+                        _manager?.Show(new Notification("提示", "配置错误", NotificationType.Information));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _manager?.Show(new Notification("提示", "配置错误", NotificationType.Information));
+                    _logger.Error($"MenuItem_Click failed msg: {ex.Message}, trace: {ex.StackTrace}");
                 }
             }
         }
