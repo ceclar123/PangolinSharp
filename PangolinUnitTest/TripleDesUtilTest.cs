@@ -3,7 +3,7 @@ using Pangolin.Utility;
 
 namespace PangolinUnitTest;
 
-public class TripleDesTest
+public class TripleDesUtilTest
 {
     [SetUp]
     public void Setup()
