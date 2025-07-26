@@ -87,7 +87,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <TextBox DockPanel.Dock="Bottom" Text="{Binding Path=HttpReq.RequestBody}" VerticalAlignment="Stretch" TextWrapping="Wrap" HorizontalContentAlignment="Left"
-                                     VerticalContentAlignment="Top" />
+                                     VerticalContentAlignment="Top" AcceptsReturn="True" AcceptsTab="True" />
                         </DockPanel>
                     </TabItem>
                     <TabItem Header="binary" />
