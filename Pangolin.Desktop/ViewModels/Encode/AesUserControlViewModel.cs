@@ -1,17 +1,19 @@
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
+using DynamicData;
+
+using Pangolin.Desktop.Models;
+using Pangolin.Utility;
+using Pangolin.Utility.Aes;
+using ReactiveUI;
+using ReactiveUI.Primitives;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using DynamicData;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
-using Pangolin.Desktop.Models;
-using Pangolin.Utility;
-using Pangolin.Utility.Aes;
-using ReactiveUI;
 
 namespace Pangolin.Desktop.ViewModels.Encode;
 
@@ -55,10 +57,10 @@ public class AesUserControlViewModel : ViewModelBase
 
     public string Iv { get; set; } = string.Empty;
 
-    public ReactiveCommand<Unit, Unit> CmdGenKey { get; protected set; }
-    public ReactiveCommand<Unit, Unit> CmdGenIv { get; protected set; }
-    public ReactiveCommand<Unit, Unit> CmdEncrypt { get; protected set; }
-    public ReactiveCommand<Unit, Unit> CmdDecrypt { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdGenKey { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdGenIv { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdEncrypt { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdDecrypt { get; protected set; }
 
     public AesUserControlViewModel()
     {
@@ -94,10 +96,9 @@ public class AesUserControlViewModel : ViewModelBase
 
     private async Task CommandCompress()
     {
-        if (string.IsNullOrWhiteSpace(Plaintext) || string.IsNullOrWhiteSpace(Key) || string.IsNullOrWhiteSpace(Iv))
+            if (string.IsNullOrWhiteSpace(Plaintext) || string.IsNullOrWhiteSpace(Key) || string.IsNullOrWhiteSpace(Iv))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification("提示", "参数为空", NotificationType.Information));
         }
         else
         {
@@ -112,8 +113,7 @@ public class AesUserControlViewModel : ViewModelBase
             }
             catch (Exception e)
             {
-                await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                    .ShowWindowDialogAsync(this.ParentWindow);
+                MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
             }
         }
     }
@@ -122,8 +122,7 @@ public class AesUserControlViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Ciphertext) || string.IsNullOrWhiteSpace(Key) || string.IsNullOrWhiteSpace(Iv))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "参数为空", NotificationType.Information));
         }
         else
         {
@@ -138,8 +137,7 @@ public class AesUserControlViewModel : ViewModelBase
             }
             catch (Exception e)
             {
-                await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                    .ShowWindowDialogAsync(this.ParentWindow);
+                MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
             }
         }
     }

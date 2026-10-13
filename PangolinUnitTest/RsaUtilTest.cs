@@ -7,8 +7,8 @@ namespace PangolinUnitTest;
 public class RsaUtilTest
 {
     private RSA rsa;
-    private string publicKey;
-    private string privateKey;
+    private string? publicKey;
+    private string? privateKey;
 
 
     [SetUp]

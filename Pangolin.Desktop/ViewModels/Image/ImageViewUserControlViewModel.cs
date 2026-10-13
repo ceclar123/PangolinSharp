@@ -5,10 +5,11 @@ using System.Net.Http;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
+
 using Pangolin.Utility;
 using ReactiveUI;
 
@@ -19,8 +20,8 @@ public class ImageViewUserControlViewModel : ViewModelBase
     public String? ImageUrl { get; set; } = string.Empty;
     public Bitmap? ImageSource { get; private set; } = null;
     public string? LocalFilePath { get; private set; }
-    public ReactiveCommand<Unit, Unit> CmdLoadImage { get; protected set; }
-    public ReactiveCommand<Unit, Unit> CmdBrowseFilePath { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdLoadImage { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdBrowseFilePath { get; protected set; }
 
     public ImageViewUserControlViewModel()
     {
@@ -32,8 +33,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
     {
         if (!CommonUtil.IsValidHttpUrl(ImageUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "图片链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "图片链接非法", NotificationType.Information));
             return;
         }
 
@@ -41,8 +41,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "文件框系统错误", NotificationType.Information));
             return;
         }
 
@@ -74,8 +73,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
     {
         if (!CommonUtil.IsValidHttpUrl(ImageUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "图片链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "图片链接非法", NotificationType.Information));
             return;
         }
 
@@ -92,8 +90,7 @@ public class ImageViewUserControlViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
         }
     }
 
@@ -119,13 +116,11 @@ public class ImageViewUserControlViewModel : ViewModelBase
             // 保存到本地文件
             await File.WriteAllBytesAsync(LocalFilePath, imageBytes);
 
-            await MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "保存成功", NotificationType.Error));
         }
         catch (Exception e)
         {
-            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
         }
     }
 }

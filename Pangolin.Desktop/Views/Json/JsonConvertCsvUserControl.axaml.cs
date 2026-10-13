@@ -8,14 +8,13 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using CsvHelper;
 using CsvHelper.Configuration;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
 
 namespace Pangolin.Desktop.Views.Json;
 
@@ -33,9 +32,7 @@ public partial class JsonConvertCsvUserControl : UserControlBase
         string jsonString = this.TxtJsonString.Text ?? string.Empty;
         if (string.IsNullOrWhiteSpace(jsonString))
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info,
-                WindowStartupLocation.CenterOwner);
-            box.ShowWindowDialogAsync(this.ParentWindow);
+            (this.DataContext as Pangolin.Desktop.ViewModels.ViewModelBase)?.MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification("提示", "参数为空", NotificationType.Information));
             return;
         }
 
@@ -64,9 +61,7 @@ public partial class JsonConvertCsvUserControl : UserControlBase
         }
         catch (Exception ex)
         {
-            IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", ex.Message, ButtonEnum.Ok,
-                Icon.Error, WindowStartupLocation.CenterOwner);
-            box.ShowWindowDialogAsync(this.ParentWindow);
+            (this.DataContext as Pangolin.Desktop.ViewModels.ViewModelBase)?.MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification("错误", ex.Message, NotificationType.Error));
         }
     }
 
@@ -159,13 +154,11 @@ public partial class JsonConvertCsvUserControl : UserControlBase
                 await csv.NextRecordAsync();
             }
 
-            await MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            (this.DataContext as Pangolin.Desktop.ViewModels.ViewModelBase)?.MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification("提示", "保存成功", NotificationType.Error));
         }
         catch (Exception ex)
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", ex.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            (this.DataContext as Pangolin.Desktop.ViewModels.ViewModelBase)?.MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification("提示", ex.Message, NotificationType.Error));
         }
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Pangolin.Desktop/App.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Styles/Styles.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Encode/AesUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Encode/Base64UserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Encode/DeflateUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Encode/GzipUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Image/ImageViewUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Json/CsvConvertJsonUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Json/JsonConvertCsharpUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Json/JsonConvertCsvUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Json/JsonConvertJavaUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Json/JsonViewUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/MainWindow.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+        <entry key="Pangolin.Desktop/Views/Network/HttpRequestUserControl.axaml" value="Pangolin.Desktop/Pangolin.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

@@ -2,6 +2,7 @@
 using Avalonia.Platform;
 using Pangolin.Desktop.Models;
 using Pangolin.Desktop.Properties;
+using ReactiveUI.Validation.Helpers;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using Tmds.DBus.Protocol;
 
 namespace Pangolin.Desktop.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ReactiveValidationObject
     {
         public string Greeting => "Welcome to Avalonia!";
 

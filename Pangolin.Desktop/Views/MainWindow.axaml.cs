@@ -32,7 +32,7 @@ namespace Pangolin.Desktop.Views
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);
-            _manager = new WindowNotificationManager(this) { MaxItems = 3 };
+            _manager = new WindowNotificationManager(this) { Position = NotificationPosition.BottomRight, MaxItems = 3 };
         }
 
         private void LoadMenu()
@@ -206,6 +206,7 @@ namespace Pangolin.Desktop.Views
                 if (viewModel is not null)
                 {
                     viewModel.ParentWindow = this;
+                    viewModel.MainNotificationManager = _manager;
                     userControl.DataContext = viewModel;
                 }
             }

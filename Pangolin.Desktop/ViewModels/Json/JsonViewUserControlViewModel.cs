@@ -9,9 +9,10 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
 using Avalonia.Platform.Storage;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
+
 using Pangolin.Desktop.Models;
 using Pangolin.Utility;
 using ReactiveUI;
@@ -24,8 +25,8 @@ public class JsonViewUserControlViewModel : ViewModelBase
     public string? JsonUrl { get; set; } = string.Empty;
     public string? JsonString { get; set; } = string.Empty;
     public string? LocalFilePath { get; private set; }
-    public ReactiveCommand<Unit, Unit> CmdLoadJson { get; protected set; }
-    public ReactiveCommand<Unit, Unit> CmdBrowseFilePath { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdLoadJson { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdBrowseFilePath { get; protected set; }
 
     public JsonViewUserControlViewModel()
     {
@@ -33,12 +34,11 @@ public class JsonViewUserControlViewModel : ViewModelBase
         CmdBrowseFilePath = ReactiveCommand.CreateFromTask(BrowseFilePath);
     }
 
-    private async Task BrowseFilePath()
+        private async Task BrowseFilePath()
     {
         if (!CommonUtil.IsValidHttpUrl(JsonUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "JSON文件链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "JSON文件链接非法", NotificationType.Information));
             return;
         }
 
@@ -46,8 +46,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
         IStorageProvider? storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "文件框系统错误", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "文件框系统错误", NotificationType.Information));
             return;
         }
 
@@ -79,8 +78,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
     {
         if (!CommonUtil.IsValidHttpUrl(JsonUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "JSON文件链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "JSON文件链接非法", NotificationType.Information));
             return;
         }
 
@@ -113,8 +111,7 @@ public class JsonViewUserControlViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
         }
     }
 
@@ -150,13 +147,11 @@ public class JsonViewUserControlViewModel : ViewModelBase
             // 保存到本地文件
             await File.WriteAllBytesAsync(LocalFilePath, bytes);
 
-            await MessageBoxManager.GetMessageBoxStandard("提示", "保存成功", ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "保存成功", NotificationType.Error));
         }
         catch (Exception e)
         {
-            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
         }
     }
 

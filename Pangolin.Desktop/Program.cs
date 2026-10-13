@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Avalonia;
+using ReactiveUI.Avalonia;
+using System;
 using System.Diagnostics;
-using Avalonia;
-using Avalonia.ReactiveUI;
 
 namespace Pangolin.Desktop
 {
@@ -30,9 +30,9 @@ namespace Pangolin.Desktop
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace()
-                .UseReactiveUI()
-                .With(new X11PlatformOptions { EnableMultiTouch = true, UseDBusMenu = true })
-                .With(new Win32PlatformOptions { RenderingMode = new Win32RenderingMode[] { Win32RenderingMode.AngleEgl } })
+                .UseReactiveUI(builder => { /* We don't need to configure anything for the samples */ })
+                //.With(new X11PlatformOptions { EnableMultiTouch = true, UseDBusMenu = true })
+                //.With(new Win32PlatformOptions { RenderingMode = new Win32RenderingMode[] { Win32RenderingMode.AngleEgl } })
         //.UseManagedSystemDialogs()
         ;
     }

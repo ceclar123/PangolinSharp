@@ -23,7 +23,7 @@ namespace Pangolin.Desktop
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
-                desktop.MainWindow.DataContext = new MainWindowViewModel() { ParentWindow = desktop.MainWindow };
+                desktop.MainWindow.DataContext = new MainWindowViewModel();
 
                 if (desktop.MainWindow.Screens.Primary != null)
                 {

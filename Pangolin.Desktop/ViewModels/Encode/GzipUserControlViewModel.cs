@@ -2,9 +2,8 @@
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
 using Pangolin.Utility;
 using ReactiveUI;
 
@@ -15,8 +14,8 @@ namespace Pangolin.Desktop.ViewModels.Encode
         public string From { get; set; } = string.Empty;
         public string To { get; set; } = string.Empty;
 
-        public ReactiveCommand<Unit, Unit> CmdCompress { get; protected set; }
-        public ReactiveCommand<Unit, Unit> CmdDecompress { get; protected set; }
+        public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdCompress { get; protected set; }
+        public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdDecompress { get; protected set; }
 
         public GzipUserControlViewModel()
         {
@@ -28,8 +27,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
         {
             if (string.IsNullOrWhiteSpace(From))
             {
-                IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner);
-                await box.ShowWindowDialogAsync(this.ParentWindow);
+                MainNotificationManager?.Show(new Notification("提示", "参数为空", NotificationType.Information));
             }
             else
             {
@@ -44,8 +42,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
                 }
                 catch (Exception e)
                 {
-                    IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner);
-                    await box.ShowWindowDialogAsync(this.ParentWindow);
+                    MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
                 }
             }
         }
@@ -54,8 +51,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
         {
             if (string.IsNullOrWhiteSpace(From))
             {
-                IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("提示", "参数为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner);
-                await box.ShowWindowDialogAsync(this.ParentWindow);
+                MainNotificationManager?.Show(new Notification("提示", "参数为空", NotificationType.Information));
             }
             else
             {
@@ -70,8 +66,7 @@ namespace Pangolin.Desktop.ViewModels.Encode
                 }
                 catch (Exception e)
                 {
-                    IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner);
-                    await box.ShowWindowDialogAsync(this.ParentWindow);
+                    MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
                 }
             }
         }

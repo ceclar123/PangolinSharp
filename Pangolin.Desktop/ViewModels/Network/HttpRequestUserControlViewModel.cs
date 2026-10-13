@@ -13,8 +13,9 @@ using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
+using Avalonia.Controls.Notifications;
+using Notification = Avalonia.Controls.Notifications.Notification;
+
 using Pangolin.Desktop.Models;
 using Pangolin.Utility;
 using ReactiveUI;
@@ -32,7 +33,7 @@ public class HttpRequestUserControlViewModel : ViewModelBase
     public HttpResponseDto HttpResp { get; set; }
 
 
-    public ReactiveCommand<Unit, Unit> CmdSend { get; protected set; }
+    public ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid> CmdSend { get; protected set; }
 
     public HttpRequestUserControlViewModel()
     {
@@ -148,22 +149,19 @@ public class HttpRequestUserControlViewModel : ViewModelBase
     {
         if (this.HasErrors)
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "参数错误", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "参数错误", NotificationType.Information));
             return;
         }
 
         if (string.IsNullOrWhiteSpace(HttpReq.RequestUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "请求链接不能为空", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "请求链接不能为空", NotificationType.Information));
             return;
         }
 
         if (!HttpUtil.IsValidHttpUrl(HttpReq.RequestUrl))
         {
-            await MessageBoxManager.GetMessageBoxStandard("提示", "请求链接非法", ButtonEnum.Ok, Icon.Info, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("提示", "请求链接非法", NotificationType.Information));
             return;
         }
 
@@ -256,8 +254,7 @@ public class HttpRequestUserControlViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            await MessageBoxManager.GetMessageBoxStandard("错误", e.Message, ButtonEnum.Ok, Icon.Error, WindowStartupLocation.CenterOwner)
-                .ShowWindowDialogAsync(this.ParentWindow);
+            MainNotificationManager?.Show(new Notification("错误", e.Message, NotificationType.Error));
         }
     }
 
