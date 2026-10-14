@@ -16,6 +16,13 @@ public class FormDataField : KeyValueDto<string, string>
         get => _isFile;
         set => SetField(ref _isFile, value);
     }
+
+    private string _historyFileName = string.Empty;
+    public string HistoryFileName
+    {
+        get => _historyFileName;
+        set => SetField(ref _historyFileName, value ?? string.Empty);
+    }
 }
 
 // A snapshot of a request. Editing the UI while sending does not change this instance.

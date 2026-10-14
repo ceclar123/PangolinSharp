@@ -53,6 +53,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Pangolin.Utility\Pangolin.Utility.csproj" />
+        <ProjectReference Include="..\Pangolin.SQLite\Pangolin.SQLite.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -148,8 +148,16 @@ namespace Pangolin.Desktop.Views.Postman
                 var path = files[0].TryGetLocalPath();
                 if (path == null) throw new IOException("Choose a local file for upload.");
                 field.Value = path;
+                field.HistoryFileName = Path.GetFileName(path);
             }
             catch (Exception ex) { ShowError(ex); }
+        }
+
+        private async void DeleteHistory_Click(object? sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { Tag: long id } || _viewModel == null) return;
+            await _viewModel.DeleteHistoryAsync(id);
         }
 
         private void RenderResponse()

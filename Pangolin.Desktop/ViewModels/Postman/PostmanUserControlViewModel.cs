@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
@@ -9,6 +11,8 @@ using System.Threading.Tasks;
 using Pangolin.Desktop.Models;
 using Pangolin.Desktop.Models.Postman;
 using Pangolin.Desktop.Services;
+using Pangolin.SQLite;
+using Pangolin.SQLite.Models;
 using ReactiveUI;
 using Command = ReactiveUI.ReactiveCommand<ReactiveUI.Primitives.RxVoid, ReactiveUI.Primitives.RxVoid>;
 
@@ -17,6 +21,9 @@ namespace Pangolin.Desktop.ViewModels.Postman;
 public class PostmanUserControlViewModel : ViewModelBase
 {
     private readonly HttpClientService _service = new();
+    private readonly RequestHistoryStore _historyStore;
+    private readonly Task _historyInitialization;
+    private int _historyLoadVersion;
     private CancellationTokenSource? _requestCancellation;
     private CancellationTokenSource? _formatCancellation;
     private int _formatVersion;
@@ -38,8 +45,12 @@ public class PostmanUserControlViewModel : ViewModelBase
     public bool IsImagePreview => HasResponse && ResponseContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)
         && ResponseBodyMode == 0 && ResponseFormat == "Binary";
 
-    public PostmanUserControlViewModel()
+    public PostmanUserControlViewModel() : this(new RequestHistoryStore()) { }
+
+    public PostmanUserControlViewModel(RequestHistoryStore historyStore)
     {
+        _historyStore = historyStore;
+        _historyInitialization = InitializeHistoryAsync();
         QueryParams.Add(new());
         Headers.Add(new());
         FormDataParams.Add(new());
@@ -52,9 +63,66 @@ public class PostmanUserControlViewModel : ViewModelBase
         CmdAddFormDataParam = ReactiveCommand.Create(() => FormDataParams.Add(new()));
         CmdImportQuery = ReactiveCommand.Create(ImportQuery);
         CmdToggleHeaderBulkEdit = ReactiveCommand.Create(ToggleHeaderBulkEdit);
+        CmdShowCollections = ReactiveCommand.Create(() => { IsHistoryView = false; });
+        CmdShowHistory = ReactiveCommand.CreateFromTask(ShowHistoryAsync);
     }
 
     public HttpRequestModel Request { get; } = new();
+    public ObservableCollection<RequestHistorySummary> HistoryEntries { get; } = new();
+    public ObservableCollection<RequestHistorySummary> VisibleHistoryEntries { get; } = new();
+    public string DatabasePath => _historyStore.DatabasePath;
+    public bool IsCollectionView => !IsHistoryView;
+    private bool _isHistoryView;
+    public bool IsHistoryView
+    {
+        get => _isHistoryView;
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _isHistoryView, value);
+            this.RaisePropertyChanged(nameof(IsCollectionView));
+        }
+    }
+    private string _historyFilter = string.Empty;
+    public string HistoryFilter
+    {
+        get => _historyFilter;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _historyFilter, value ?? string.Empty);
+            this.RaisePropertyChanged(nameof(HistoryEmptyText));
+            FilterHistory();
+        }
+    }
+    private string _historyError = string.Empty;
+    public string HistoryError
+    {
+        get => _historyError;
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _historyError, value ?? string.Empty);
+            this.RaisePropertyChanged(nameof(HasHistoryError));
+        }
+    }
+    public bool HasHistory => HistoryEntries.Count != 0;
+    public bool HasVisibleHistory => VisibleHistoryEntries.Count != 0;
+    public bool HasHistoryError => !string.IsNullOrWhiteSpace(HistoryError);
+    public string HistoryEmptyText => HistoryEntries.Count == 0 ? "No request history yet" : "No matching requests";
+    public bool HistorySecretsRedacted { get; private set; }
+    public string HistorySecretsNotice => HistorySecretsRedacted
+        ? "Auth secrets, sensitive headers/parameters, and upload paths were omitted. Raw body text is stored as entered. Review the request before sending."
+        : string.Empty;
+    private RequestHistorySummary? _selectedHistoryItem;
+    public Task HistoryRestoreTask { get; private set; } = Task.CompletedTask;
+    public RequestHistorySummary? SelectedHistoryItem
+    {
+        get => _selectedHistoryItem;
+        set
+        {
+            if (ReferenceEquals(_selectedHistoryItem, value)) return;
+            this.RaiseAndSetIfChanged(ref _selectedHistoryItem, value);
+            if (value != null) HistoryRestoreTask = RestoreHistoryAsync(value);
+        }
+    }
     public ObservableCollection<KeyValueDto<string, string>> Headers { get; } = new();
     public ObservableCollection<KeyValueDto<string, string>> QueryParams { get; } = new();
     public ObservableCollection<FormDataField> FormDataParams { get; } = new();
@@ -270,6 +338,8 @@ public class PostmanUserControlViewModel : ViewModelBase
     public Command CmdClearResponse { get; }
     public Command CmdToggleHeaderBulkEdit { get; }
     public Command CmdImportQuery { get; }
+    public Command CmdShowCollections { get; }
+    public Command CmdShowHistory { get; }
 
     public HttpRequestModel BuildRequest()
     {
@@ -307,6 +377,279 @@ public class PostmanUserControlViewModel : ViewModelBase
         };
     }
 
+    private async Task InitializeHistoryAsync()
+    {
+        try
+        {
+            await _historyStore.InitializeAsync();
+            await RefreshHistoryAsync();
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not open request history: {ex.Message}";
+        }
+    }
+
+    private async Task ShowHistoryAsync()
+    {
+        IsHistoryView = true;
+        await _historyInitialization;
+        await RefreshHistoryAsync();
+    }
+
+    private async Task RefreshHistoryAsync()
+    {
+        try
+        {
+            var recent = await _historyStore.GetRecentAsync(RequestHistoryStore.MaximumHistoryEntries);
+            HistoryEntries.Clear();
+            foreach (var entry in recent) HistoryEntries.Add(entry);
+            this.RaisePropertyChanged(nameof(HasHistory));
+            this.RaisePropertyChanged(nameof(HistoryEmptyText));
+            FilterHistory();
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not load request history: {ex.Message}";
+        }
+    }
+
+    private void FilterHistory()
+    {
+        VisibleHistoryEntries.Clear();
+        var filter = HistoryFilter.Trim();
+        foreach (var entry in HistoryEntries.Where(entry => string.IsNullOrEmpty(filter)
+                     || entry.Method.Contains(filter, StringComparison.OrdinalIgnoreCase)
+                     || entry.Url.Contains(filter, StringComparison.OrdinalIgnoreCase)))
+            VisibleHistoryEntries.Add(entry);
+        this.RaisePropertyChanged(nameof(HasVisibleHistory));
+    }
+
+    private async Task SaveRequestHistoryAsync(HttpRequestModel request, RequestHistorySnapshot snapshot)
+    {
+        try
+        {
+            await _historyInitialization;
+            var safeUrl = RedactUrl(request.Url);
+            if (!string.Equals(safeUrl, request.Url, StringComparison.Ordinal)) snapshot.SecretsRedacted = true;
+            var createdAtUtc = DateTimeOffset.UtcNow;
+            var id = await _historyStore.SaveAsync(createdAtUtc, request.Method.ToString(), safeUrl, snapshot);
+            var summary = new RequestHistorySummary
+            {
+                Id = id,
+                CreatedAtUtc = createdAtUtc,
+                Method = request.Method.ToString(),
+                Url = safeUrl
+            };
+            HistoryEntries.Insert(0, summary);
+            while (HistoryEntries.Count > RequestHistoryStore.MaximumHistoryEntries) HistoryEntries.RemoveAt(HistoryEntries.Count - 1);
+            this.RaisePropertyChanged(nameof(HasHistory));
+            this.RaisePropertyChanged(nameof(HistoryEmptyText));
+            FilterHistory();
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Request sent, but history could not be saved: {ex.Message}";
+        }
+    }
+
+    private RequestHistorySnapshot CreateHistorySnapshot(HttpRequestModel request)
+    {
+        var redacted = false;
+        var headers = Headers.Where(header => !string.IsNullOrWhiteSpace(header.Key)).Select(header =>
+        {
+            var hide = IsSensitiveName(header.Key);
+            redacted |= hide && !string.IsNullOrEmpty(header.Value);
+            return new RequestHistoryHeader
+            {
+                Name = header.Key!,
+                Value = hide ? string.Empty : header.Value ?? string.Empty,
+                IsEnabled = header.IsEnabled,
+                WasRedacted = hide
+            };
+        }).ToList();
+
+        var query = QueryParams.Where(parameter => !string.IsNullOrWhiteSpace(parameter.Key)).Select(parameter =>
+        {
+            var hide = IsSensitiveName(parameter.Key);
+            redacted |= hide && !string.IsNullOrEmpty(parameter.Value);
+            return new RequestHistoryParameter
+            {
+                Key = parameter.Key!,
+                Value = hide ? string.Empty : parameter.Value ?? string.Empty,
+                IsEnabled = parameter.IsEnabled,
+                WasRedacted = hide
+            };
+        }).ToList();
+        var fields = request.BodyMode is RequestBodyMode.FormData or RequestBodyMode.UrlEncoded
+            ? FormDataParams.Where(field => !string.IsNullOrWhiteSpace(field.Key)).Select(field =>
+        {
+            var hide = field.IsFile || IsSensitiveName(field.Key);
+            redacted |= hide && !string.IsNullOrEmpty(field.Value);
+            return new RequestHistoryFormField
+            {
+                Key = field.Key ?? string.Empty,
+                Value = hide ? string.Empty : field.Value ?? string.Empty,
+                FileName = field.IsFile ? Path.GetFileName(field.Value) ?? string.Empty : string.Empty,
+                IsEnabled = field.IsEnabled,
+                IsFile = field.IsFile,
+                WasRedacted = hide
+            };
+        }).ToList()
+            : new List<RequestHistoryFormField>();
+
+        var auth = new RequestHistoryAuthConfiguration
+        {
+            ApiKeyName = request.ApiKeyName,
+            ApiKeyLocation = request.ApiKeyInQuery ? 1 : 0
+        };
+        if (request.AuthType == "Bearer Token") redacted |= !string.IsNullOrEmpty(request.BearerToken);
+        if (request.AuthType == "Basic Auth") redacted |= !string.IsNullOrEmpty(request.Password);
+        if (request.AuthType == "API Key") redacted |= !string.IsNullOrEmpty(request.ApiKeyValue);
+        auth.Username = request.Username;
+
+        return new RequestHistorySnapshot
+        {
+            Headers = headers,
+            QueryParameters = query,
+            BodyMode = request.BodyMode.ToString(),
+            BodyContentType = request.BodyContentType,
+            BodyText = request.BodyMode == RequestBodyMode.Raw ? request.Body : string.Empty,
+            FormFields = fields,
+            AuthType = request.AuthType,
+            Auth = auth,
+            Settings = new RequestHistorySettings
+            {
+                FollowRedirects = request.FollowRedirects,
+                VerifySslCertificate = request.VerifySslCertificate,
+                AutomaticallyEncodeUrl = request.AutomaticallyEncodeUrl,
+                TimeoutSeconds = request.TimeoutSeconds
+            },
+            SecretsRedacted = redacted
+        };
+    }
+
+    private async Task RestoreHistoryAsync(RequestHistorySummary summary)
+    {
+        var version = ++_historyLoadVersion;
+        try
+        {
+            var detail = await _historyStore.GetDetailAsync(summary.Id);
+            if (detail == null || version != _historyLoadVersion || SelectedHistoryItem?.Id != summary.Id) return;
+            ClearResponse();
+            Request.Method = Enum.TryParse<HttpMethodType>(summary.Method, out var method) ? method : HttpMethodType.GET;
+            Request.Url = summary.Url;
+            QueryParams.Clear();
+            foreach (var parameter in detail.QueryParameters)
+                QueryParams.Add(new KeyValueDto<string, string>
+                { Key = parameter.Key, Value = parameter.Value, IsEnabled = parameter.IsEnabled });
+            Headers.Clear();
+            foreach (var header in detail.Headers)
+                Headers.Add(new KeyValueDto<string, string>
+                { Key = header.Name, Value = header.Value, IsEnabled = header.IsEnabled });
+            FormDataParams.Clear();
+            foreach (var field in detail.FormFields)
+                FormDataParams.Add(new FormDataField
+                {
+                    Key = field.Key,
+                    Value = field.IsFile ? string.Empty : field.Value,
+                    HistoryFileName = field.FileName,
+                    IsEnabled = field.IsEnabled,
+                    IsFile = field.IsFile
+                });
+            SelectedBodyMode = Enum.TryParse<RequestBodyMode>(detail.BodyMode, out var bodyMode) ? (int)bodyMode : 0;
+            SelectedMediaType = detail.BodyContentType switch
+            {
+                "application/json" => "JSON", "application/xml" => "XML", "text/html" => "HTML", _ => "Text"
+            };
+            Request.Body = detail.BodyText;
+            SelectedAuthType = detail.AuthType;
+            BearerToken = detail.Auth.BearerToken;
+            AuthUsername = detail.Auth.Username;
+            AuthPassword = detail.Auth.Password;
+            ApiKeyName = detail.Auth.ApiKeyName;
+            ApiKeyValue = detail.Auth.ApiKeyValue;
+            ApiKeyLocation = detail.Auth.ApiKeyLocation;
+            FollowRedirects = detail.Settings.FollowRedirects;
+            VerifySslCertificate = detail.Settings.VerifySslCertificate;
+            AutomaticallyEncodeUrl = detail.Settings.AutomaticallyEncodeUrl;
+            TimeoutSeconds = detail.Settings.TimeoutSeconds;
+            IsHeaderBulkEdit = false;
+            HeaderBulkText = string.Empty;
+            HistorySecretsRedacted = detail.SecretsRedacted;
+            this.RaisePropertyChanged(nameof(HistorySecretsRedacted));
+            this.RaisePropertyChanged(nameof(HistorySecretsNotice));
+            if (HistorySecretsRedacted)
+                MainNotificationManager?.Show(new Avalonia.Controls.Notifications.Notification(
+                    "Request history", HistorySecretsNotice, Avalonia.Controls.Notifications.NotificationType.Information));
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not restore request: {ex.Message}";
+        }
+    }
+
+    private static bool IsSensitiveName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return false;
+        var normalized = new string(name.Where(char.IsLetterOrDigit).ToArray());
+        return normalized.Contains("password", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("passwd", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("secret", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("token", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("credential", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("authorization", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("apikey", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("privatekey", StringComparison.OrdinalIgnoreCase)
+            || normalized is "auth" or "cookie" or "session" or "sessionid" or "setcookie";
+    }
+
+    private static string RedactUrl(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var absoluteUri) && !string.IsNullOrEmpty(absoluteUri.UserInfo))
+        {
+            url = new UriBuilder(absoluteUri) { UserName = string.Empty, Password = string.Empty }.Uri.AbsoluteUri;
+        }
+        var fragmentIndex = url.IndexOf('#');
+        var fragment = fragmentIndex >= 0 ? url[fragmentIndex..] : string.Empty;
+        var main = fragmentIndex >= 0 ? url[..fragmentIndex] : url;
+        var queryIndex = main.IndexOf('?');
+        if (queryIndex < 0) return url;
+        var segments = main[(queryIndex + 1)..].Split('&');
+        for (var i = 0; i < segments.Length; i++)
+        {
+            var equalsIndex = segments[i].IndexOf('=');
+            var key = equalsIndex < 0 ? segments[i] : segments[i][..equalsIndex];
+            string decodedKey;
+            try { decodedKey = System.Net.WebUtility.UrlDecode(key); }
+            catch (UriFormatException) { decodedKey = key; }
+            if (IsSensitiveName(decodedKey)) segments[i] = key + "=";
+        }
+        return main[..(queryIndex + 1)] + string.Join("&", segments) + fragment;
+    }
+
+    public async Task DeleteHistoryAsync(long id)
+    {
+        try
+        {
+            await _historyInitialization;
+            await _historyStore.DeleteAsync(id);
+            if (SelectedHistoryItem?.Id == id)
+            {
+                ++_historyLoadVersion;
+                SelectedHistoryItem = null;
+            }
+            await RefreshHistoryAsync();
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not delete request history: {ex.Message}";
+        }
+    }
+
     public async Task SendAsync()
     {
         if (IsSending) return;
@@ -318,6 +661,9 @@ public class PostmanUserControlViewModel : ViewModelBase
         try
         {
             var request = BuildRequest();
+            var historySnapshot = CreateHistorySnapshot(request);
+            await SaveRequestHistoryAsync(request, historySnapshot);
+            cancellation.Token.ThrowIfCancellationRequested();
             // Keep request construction, TLS setup, decoding and transport continuations off the UI thread.
             var response = await Task.Run(() => _service.SendAsync(request, cancellation.Token), cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
