@@ -1,6 +1,6 @@
 ## 基础框架
-- Avalonia-11.0.10
-- dotnet-8
+- Avalonia-12.1.2
+- dotnet-10
 
 ## 发布打包win-x64
 ```
