@@ -192,6 +192,13 @@
         "Type": "MenuItem",
         "UserControl": "Pangolin.Desktop.Views.Network.HttpRequestUserControl",
         "ViewModel": "Pangolin.Desktop.ViewModels.Network.HttpRequestUserControlViewModel"
+      },
+      {
+        "Name": "m5_2",
+        "Header": "Postman",
+        "Type": "MenuItem",
+        "UserControl": "Pangolin.Desktop.Views.Postman.PostmanUserControl",
+        "ViewModel": "Pangolin.Desktop.ViewModels.Postman.PostmanUserControlViewModel"
       }
     ]
   }

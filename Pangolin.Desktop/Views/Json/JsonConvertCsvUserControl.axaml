@@ -24,7 +24,7 @@
                         Click="BtnExport_OnClick" Classes="Secondary" Margin="0,0,5,0" />
                 <Label x:Name="LblSplit" Content="分隔符:" Width="60" VerticalContentAlignment="Center"
                        RelativePanel.RightOf="BtnExport" />
-                <TextBox x:Name="TxtSplit" Width="100" Height="30" Watermark="默认tab符" RelativePanel.RightOf="LblSplit" />
+                <TextBox x:Name="TxtSplit" Width="100" Height="30" PlaceholderText="默认tab符" RelativePanel.RightOf="LblSplit" />
             </RelativePanel>
         </HeaderedContentControl>
         <DataGrid x:Name="JsonDataGrid" AutoGenerateColumns="False"

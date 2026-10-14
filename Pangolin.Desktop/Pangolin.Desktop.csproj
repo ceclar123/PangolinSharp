@@ -93,6 +93,16 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AvaloniaXaml Remove="Views\Postman\**\*.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
         <AdditionalFiles Remove="Config\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Include="Views\Postman\PostmanUserControl.axaml">
+        <SubType>Designer</SubType>
+      </AvaloniaXaml>
     </ItemGroup>
 </Project>

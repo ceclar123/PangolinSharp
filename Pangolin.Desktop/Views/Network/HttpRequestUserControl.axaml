@@ -32,7 +32,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBox Grid.Column="1" Grid.Row="0" Height="30" Margin="0,0,0,0" Text="{Binding HttpReq.RequestUrl, Mode=TwoWay}" Watermark="请求链接" />
+            <TextBox Grid.Column="1" Grid.Row="0" Height="30" Margin="0,0,0,0" Text="{Binding HttpReq.RequestUrl, Mode=TwoWay}" PlaceholderText="请求链接" />
             <Button Grid.Column="2" Grid.Row="0" Height="30" Width="70" Margin="5,0,5,0" Content="Send" Command="{Binding CmdSend}" Classes="Primary" />
         </Grid>
         <TabControl Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -122,7 +122,7 @@
                         </TextBlock>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1" Classes="grid-cell-light-gray">
-                        <NumericUpDown Value="{Binding Path=Setting.Timeout}" Watermark="超时时间(秒)" Increment="1" Minimum="1" Maximum="200" FormatString="0" ClipValueToMinMax="True" ParsingNumberStyle="Integer" />
+                        <NumericUpDown Value="{Binding Path=Setting.Timeout}" PlaceholderText="超时时间(秒)" Increment="1" Minimum="1" Maximum="200" FormatString="0" ClipValueToMinMax="True" ParsingNumberStyle="Integer" />
                     </Border>
                 </Grid>
             </TabItem>

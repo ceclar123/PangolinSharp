@@ -14,7 +14,7 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch" Watermark="图片链接" Height="30"
+        <TextBox Text="{Binding ImageUrl, Mode=TwoWay}" HorizontalAlignment="Stretch" PlaceholderText="图片链接" Height="30"
                  Margin="5" Grid.Column="0" Grid.Row="0" />
         <Button Content="加载" Command="{Binding CmdLoadImage}" HorizontalAlignment="Stretch" Grid.Column="1"
                 Grid.Row="0" Classes="Primary" Margin="0,0,5,0" />

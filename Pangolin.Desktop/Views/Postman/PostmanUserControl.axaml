@@ -1,0 +1,407 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:pm="using:Pangolin.Desktop.Models.Postman"
+             xmlns:vm="using:Pangolin.Desktop.ViewModels.Postman"
+             x:Class="Pangolin.Desktop.Views.Postman.PostmanUserControl"
+             x:DataType="vm:PostmanUserControlViewModel">
+    <UserControl.Styles>
+        <Style Selector="TabControl.responseTabs > TabItem">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,0,2" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Header}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="TabControl.responseTabs > TabItem:selected">
+            <Setter Property="BorderBrush" Value="#FF6C37" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TabStrip.bodyModes > TabStripItem">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="Background" Value="#EEEEEE" />
+            <Setter Property="Foreground" Value="#777777" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="2" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="TabStrip.bodyModes > TabStripItem:selected">
+            <Setter Property="Background" Value="#E0E0E0" />
+            <Setter Property="Foreground" Value="#333333" />
+        </Style>
+        <Style Selector="Button.responseTool">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="MinHeight" Value="26" />
+            <Setter Property="Padding" Value="8,3" />
+        </Style>
+        <Style Selector="TextBlock.responseMetric">
+            <Setter Property="Foreground" Value="#16835D" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+        <Style Selector="TextBlock.responseMetric.error">
+            <Setter Property="Foreground" Value="#D34545" />
+        </Style>
+    </UserControl.Styles>
+    <Design.DataContext>
+        <vm:PostmanUserControlViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="36,*" Background="#F6F6F6">
+        <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#DADADA" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,0">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <TextBlock Text="Postman" FontSize="15" FontWeight="SemiBold" Foreground="#E05A2A" />
+                    <TextBlock Text="Workspace" Foreground="#6B6B6B" />
+                </StackPanel>
+                <TextBox Grid.Column="1"
+                         Height="26"
+                         MaxWidth="420"
+                         HorizontalAlignment="Center"
+                         PlaceholderText="Search requests, collections, and environments" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <Button Content="Import" MinWidth="64" Classes="clear" />
+                    <Button Content="New" MinWidth="52" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="248,4,*">
+            <Border Grid.Column="0" Background="#FBFBFB" BorderBrush="#DCDCDC" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="12,10,12,6" Spacing="6">
+                        <Button Content="Collections" MinWidth="82" />
+                        <Button Content="History" MinWidth="60" Classes="clear" />
+                    </StackPanel>
+
+                    <Border Grid.Row="1" Margin="12,4,12,10" Background="#FFFFFF" BorderBrush="#DFDFDF" BorderThickness="1" CornerRadius="3">
+                        <TextBox Margin="8,4" PlaceholderText="Filter" />
+                    </Border>
+
+                    <ScrollViewer Grid.Row="2">
+                        <StackPanel Margin="12,0,12,12" Spacing="8">
+                            <Border Background="#FFFFFF" BorderBrush="#DEDEDE" BorderThickness="1" CornerRadius="4" Padding="10">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Pangolin Requests" FontWeight="SemiBold" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="GET" Foreground="#0C7C59" FontWeight="SemiBold" Width="42" />
+                                        <TextBlock Text="Untitled Request" Foreground="#444444" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="POST" Foreground="#C35A00" FontWeight="SemiBold" Width="42" />
+                                        <TextBlock Text="New Request" Foreground="#444444" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="No environment" Foreground="#777777" Margin="2,8,0,0" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1"
+                          Width="4"
+                          Background="#E2E2E2"
+                          ResizeDirection="Columns"
+                          HorizontalAlignment="Stretch" />
+
+            <Grid Grid.Column="2" RowDefinitions="Auto,*,4,*" MinWidth="560" Margin="12,10,12,10">
+                <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#DCDCDC" BorderThickness="1" CornerRadius="4" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="90,*,60,60" Height="34">
+                        <ComboBox Grid.Column="0" Width="90"
+                                  ItemsSource="{Binding Methods}"
+                                  SelectedItem="{Binding Request.Method, Mode=TwoWay}"
+                                  VerticalAlignment="Stretch" />
+
+                        <TextBox Grid.Column="1"
+                                 Margin="1,0,0,0"
+                                 Text="{Binding Request.Url, Mode=TwoWay}"
+                                 PlaceholderText="Enter request URL"
+                                 VerticalAlignment="Stretch" />
+
+                        <Button Grid.Column="2"
+                                Command="{Binding CmdSend}"
+                                Click="CommitRequestEdits"
+                                Content="Send"
+                                Margin="4,0,0,0"
+                                Width="56"
+                                VerticalAlignment="Stretch"
+                                Classes="Primary" />
+
+                        <Button Grid.Column="3"
+                                Content="Cancel"
+                                Command="{Binding CmdCancel}"
+                                Margin="4,0,0,0"
+                                Width="56"
+                                VerticalAlignment="Stretch"
+                                Classes="Secondary"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#DCDCDC" BorderThickness="1" CornerRadius="4">
+                    <TabControl>
+                        <TabItem Header="Params">
+                            <Grid RowDefinitions="Auto,*" Margin="12">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
+                                    <TextBlock Text="Query Params" FontWeight="SemiBold" />
+                                    <Button Grid.Column="1" Content="Import URL params" Command="{Binding CmdImportQuery}" Classes="clear" Margin="0,0,8,0" Click="CommitRequestEdits" />
+                                    <Button Grid.Column="2" Content="Add" Command="{Binding CmdAddQueryParam}" MinWidth="48" />
+                                </Grid>
+                                <DataGrid Grid.Row="1" x:Name="QueryGrid"
+                                          ItemsSource="{Binding QueryParams}"
+                                          AutoGenerateColumns="False"
+                                          CanUserResizeColumns="True"
+                                          GridLinesVisibility="Horizontal"
+                                          BorderBrush="#E1E1E1"
+                                          BorderThickness="1">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="" Width="42" Binding="{Binding IsEnabled, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Value" Width="2*" Binding="{Binding Value, Mode=TwoWay}" />
+                                        <DataGridTemplateColumn Header="" Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="×" Tag="Query" Click="DeleteParameter_Click" Classes="clear" ToolTip.Tip="Remove row" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Authorization">
+                            <ScrollViewer>
+                                <StackPanel Margin="12" Spacing="12">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="Type" Width="80" VerticalAlignment="Center" />
+                                        <ComboBox Width="220" ItemsSource="{Binding AuthTypes}" SelectedItem="{Binding SelectedAuthType, Mode=TwoWay}" />
+                                    </StackPanel>
+                                    <TextBlock IsVisible="{Binding IsNoAuth}" Text="This request does not add authentication automatically." Foreground="#888888" />
+                                    <Grid IsVisible="{Binding IsBearerAuth}" ColumnDefinitions="80,*">
+                                        <TextBlock Text="Token" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding BearerToken, Mode=TwoWay}" PasswordChar="●" PlaceholderText="Bearer token" />
+                                    </Grid>
+                                    <Grid IsVisible="{Binding IsBasicAuth}" RowDefinitions="Auto,Auto" ColumnDefinitions="80,*">
+                                        <TextBlock Text="Username" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding AuthUsername, Mode=TwoWay}" />
+                                        <TextBlock Grid.Row="1" Text="Password" VerticalAlignment="Center" Margin="0,10,0,0" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AuthPassword, Mode=TwoWay}" PasswordChar="●" Margin="0,10,0,0" />
+                                    </Grid>
+                                    <Grid IsVisible="{Binding IsApiKeyAuth}" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="80,*">
+                                        <TextBlock Text="Key" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding ApiKeyName, Mode=TwoWay}" />
+                                        <TextBlock Grid.Row="1" Text="Value" VerticalAlignment="Center" Margin="0,10,0,0" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ApiKeyValue, Mode=TwoWay}" PasswordChar="●" Margin="0,10,0,0" />
+                                        <TextBlock Grid.Row="2" Text="Add to" VerticalAlignment="Center" Margin="0,10,0,0" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ApiKeyLocations}" SelectedIndex="{Binding ApiKeyLocation, Mode=TwoWay}" Margin="0,10,0,0" MinWidth="180" />
+                                    </Grid>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <TabItem Header="Headers">
+                            <Grid RowDefinitions="Auto,*" Margin="12">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Headers" FontWeight="SemiBold" />
+                                        <TextBlock Text=" (" Foreground="#666666" />
+                                        <TextBlock Text="{Binding Headers.Count}" Foreground="#666666" />
+                                        <TextBlock Text=")" Foreground="#666666" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Content="Add" Command="{Binding CmdAddHeader}" MinWidth="48" IsEnabled="{Binding !IsHeaderBulkEdit}" />
+                                    <Button Grid.Column="2" Content="Bulk / Table" MinWidth="72" Classes="clear" Command="{Binding CmdToggleHeaderBulkEdit}" Click="CommitRequestEdits" />
+                                </Grid>
+                                <DataGrid Grid.Row="1" x:Name="HeadersGrid" IsVisible="{Binding !IsHeaderBulkEdit}"
+                                          ItemsSource="{Binding Headers}"
+                                          AutoGenerateColumns="False"
+                                          CanUserResizeColumns="True"
+                                          GridLinesVisibility="Horizontal"
+                                          BorderBrush="#E1E1E1"
+                                          BorderThickness="1">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="" Width="42" Binding="{Binding IsEnabled, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Value" Width="2*" Binding="{Binding Value, Mode=TwoWay}" />
+                                        <DataGridTemplateColumn Header="" Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="×" Tag="Headers" Click="DeleteParameter_Click" Classes="clear" ToolTip.Tip="Remove row" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBox Grid.Row="1" IsVisible="{Binding IsHeaderBulkEdit}" Text="{Binding HeaderBulkText, Mode=TwoWay}" AcceptsReturn="True" FontFamily="Consolas" PlaceholderText="Key: Value (one per line; prefix disabled headers with #)" VerticalAlignment="Stretch" />
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Body">
+                            <Grid RowDefinitions="Auto,*" Margin="12">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,0,0,8">
+                                    <ComboBox Width="210" ItemsSource="{Binding BodyModes}" SelectedIndex="{Binding SelectedBodyMode, Mode=TwoWay}" />
+                                    <ComboBox Grid.Column="1" Width="100" Margin="8,0,0,0" IsVisible="{Binding IsRawBody}" ItemsSource="{Binding MediaTypes}" SelectedItem="{Binding SelectedMediaType, Mode=TwoWay}" />
+                                    <Button Grid.Column="3" Content="Add" IsVisible="{Binding IsFormBody}" Command="{Binding CmdAddFormDataParam}" />
+                                </Grid>
+                                <TextBlock Grid.Row="1" Text="This request has no body." IsVisible="{Binding IsNoBody}" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="1" IsVisible="{Binding IsRawBody}" Text="{Binding Request.Body, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                         TextAlignment="Left"  PlaceholderText="Request body" />
+                                <DataGrid Grid.Row="1" x:Name="FormGrid" IsVisible="{Binding IsFormBody}" ItemsSource="{Binding FormDataParams}" AutoGenerateColumns="False" CanUserResizeColumns="True" GridLinesVisibility="Horizontal">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="" Width="42" Binding="{Binding IsEnabled, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key, Mode=TwoWay}" />
+                                        <DataGridTextColumn Header="Value / File path" Width="2*" Binding="{Binding Value, Mode=TwoWay}" />
+                                        <DataGridTemplateColumn Header="File" Width="90">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate x:DataType="pm:FormDataField">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <CheckBox IsChecked="{Binding IsFile, Mode=TwoWay}" ToolTip.Tip="Upload a file in form-data mode" />
+                                                        <Button Content="..." IsVisible="{Binding IsFile}" Click="ChooseUploadFile_Click" Classes="clear" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="" Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate><Button Content="×" Tag="Form" Click="DeleteParameter_Click" Classes="clear" /></DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Pre-request Script" IsEnabled="False" ToolTip.Tip="Script execution is not available yet." />
+                        <TabItem Header="Tests" IsEnabled="False" ToolTip.Tip="Script assertions are not available yet." />
+
+                        <TabItem Header="Settings">
+                            <StackPanel Margin="12" Spacing="8">
+                                <CheckBox Content="Follow redirects" IsChecked="{Binding FollowRedirects, Mode=TwoWay}" />
+                                <CheckBox Content="Enable SSL certificate verification" IsChecked="{Binding VerifySslCertificate, Mode=TwoWay}" />
+                                <CheckBox Content="Automatically encode URL" IsChecked="{Binding AutomaticallyEncodeUrl, Mode=TwoWay}" />
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="Timeout (seconds)" VerticalAlignment="Center" />
+                                    <NumericUpDown Width="130" Minimum="1" Maximum="3600" Increment="1" FormatString="0" Value="{Binding TimeoutSeconds, Mode=TwoWay}" />
+                                </StackPanel>
+                                <TextBlock Text="File uploads are supported in form-data mode. URL-encoded fields are sent as text." TextWrapping="Wrap" Foreground="#888888" />
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </Border>
+
+                <GridSplitter Grid.Row="2"
+                              Height="4"
+                              Background="#E2E2E2"
+                              ResizeDirection="Rows"
+                              VerticalAlignment="Stretch" />
+
+                <Border Grid.Row="3" Background="White" BorderBrush="#DCDCDC" BorderThickness="1" Margin="0,4,0,0">
+                    <Grid RowDefinitions="38,*,Auto,Auto">
+                        <Border Grid.Row="0" ZIndex="1" HorizontalAlignment="Right" Margin="250,0,8,0" Padding="4,6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <WrapPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Status: " Foreground="#888888" FontSize="11" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding ResponseStatusText}" Classes="responseMetric" Classes.error="{Binding IsResponseError}" Margin="0,0,16,0" VerticalAlignment="Center" MaxWidth="160" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ResponseStatusText}" />
+                                    <TextBlock Text="Time: " Foreground="#888888" FontSize="11" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding ResponseTime}" Classes="responseMetric" Margin="0,0,16,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="Size: " Foreground="#888888" FontSize="11" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding ResponseSize}" Classes="responseMetric" VerticalAlignment="Center" ToolTip.Tip="Response body bytes after decompression" />
+                                </WrapPanel>
+                            </Grid>
+                        </Border>
+                        <ProgressBar Grid.Row="0" ZIndex="2" Height="2" VerticalAlignment="Bottom" IsIndeterminate="True" IsVisible="{Binding IsSending}" IsHitTestVisible="False" />
+                        <TabControl Grid.RowSpan="2" Classes="responseTabs">
+                            <TabItem Header="Body">
+                                <Grid RowDefinitions="Auto,*">
+                                    <Border Background="#FAFAFA" BorderBrush="#E6E6E6" BorderThickness="0,1,0,1" Padding="10,5">
+                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+                                            <TabStrip Classes="bodyModes" VerticalAlignment="Center" SelectedIndex="{Binding ResponseBodyMode, Mode=TwoWay}">
+                                                <TabStrip.ItemsPanel>
+                                                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                                </TabStrip.ItemsPanel>
+                                                <TabStripItem Content="Pretty" />
+                                                <TabStripItem Content="Raw" />
+                                            </TabStrip>
+                                            <ComboBox Grid.Column="1" Width="100" Margin="8,0,0,0" MinHeight="26" Padding="8,3" ItemsSource="{Binding ResponseFormats}" SelectedItem="{Binding ResponseFormat, Mode=TwoWay}" ToolTip.Tip="Format used by Pretty view" />
+                                            <CheckBox Grid.Column="3" MinHeight="26" VerticalAlignment="Center" x:Name="WrapResponse" Content="Wrap" IsChecked="False" FontSize="11" Margin="8,0" IsCheckedChanged="WrapResponse_Changed" />
+                                            <Button Grid.Column="4" Content="Save" Classes="responseTool clear" Click="SaveResponse_Click" IsEnabled="{Binding HasResponse}" ToolTip.Tip="Save the original response body" />
+                                            <Button Grid.Column="5" Content="Clear" Classes="responseTool clear" Command="{Binding CmdClearResponse}" />
+                                            <Button Grid.Column="6" Content="Copy" Classes="responseTool clear" Click="CopyResponse_Click" IsEnabled="{Binding HasResponse}" ToolTip.Tip="Copy the displayed response body" />
+                                        </Grid>
+                                    </Border>
+                                    <ScrollViewer Grid.Row="1" IsVisible="{Binding !IsImagePreview}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="ResponseScroll">
+                                        <Grid ColumnDefinitions="Auto,*" MinHeight="100">
+                                            <Border Background="#F7F7F7" BorderBrush="#EEEEEE" BorderThickness="0,0,1,0" Padding="10,10,8,16">
+                                                <TextBlock x:Name="ResponseLineNumbers" Text="1" Foreground="#AAAAAA" FontFamily="Consolas,monospace" FontSize="12" LineHeight="20" TextAlignment="Right" />
+                                            </Border>
+                                            <SelectableTextBlock Grid.Column="1" x:Name="ResponseEditor" Margin="12,10,12,16" FontFamily="Consolas,monospace" FontSize="12" LineHeight="20" Foreground="#333333" TextWrapping="NoWrap" />
+                                        </Grid>
+                                    </ScrollViewer>
+                                    <ScrollViewer Grid.Row="1" IsVisible="{Binding IsImagePreview}">
+                                        <Image x:Name="ResponseImage" Stretch="Uniform" Margin="12" />
+                                    </ScrollViewer>
+                                    <TextBlock Grid.Row="1" Text="Preparing response preview..." IsVisible="{Binding IsFormatting}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#888888" IsHitTestVisible="False" />
+                                    <TextBlock Grid.Row="1" Text="Sending request..." IsVisible="{Binding IsSending}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#888888" IsHitTestVisible="False" />
+                                    <StackPanel Grid.Row="1" IsVisible="{Binding ShowResponsePlaceholder}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" IsHitTestVisible="False" Margin="48,24">
+                                        <TextBlock Text="Send a request to get a response" Foreground="#888888" HorizontalAlignment="Center" IsVisible="{Binding !IsSending}" />
+                                    </StackPanel>
+                                </Grid>
+                            </TabItem>
+                            <TabItem>
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="Cookies" />
+                                        <TextBlock Text="{Binding ResponseCookies.Count, StringFormat='({0})'}" Foreground="#16835D" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <Grid>
+                                    <DataGrid ItemsSource="{Binding ResponseCookies}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" BorderThickness="0" CanUserResizeColumns="True">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Width="120" Binding="{Binding Name}" />
+                                            <DataGridTextColumn Header="Value" Width="180" Binding="{Binding Value}" />
+                                            <DataGridTextColumn Header="Domain" Width="120" Binding="{Binding Domain}" />
+                                            <DataGridTextColumn Header="Path" Width="80" Binding="{Binding Path}" />
+                                            <DataGridTextColumn Header="Expires" Width="200" Binding="{Binding Expires}" />
+                                            <DataGridTextColumn Header="SameSite" Width="90" Binding="{Binding SameSite}" />
+                                            <DataGridCheckBoxColumn Header="Secure" Width="75" Binding="{Binding Secure}" />
+                                            <DataGridCheckBoxColumn Header="HttpOnly" Width="85" Binding="{Binding HttpOnly}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <TextBlock Text="No cookies in this response" IsVisible="{Binding !ResponseCookies.Count}" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Grid>
+                            </TabItem>
+                            <TabItem>
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="Headers" />
+                                        <TextBlock Text="{Binding ResponseHeaders.Count, StringFormat='({0})'}" Foreground="#16835D" />
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <DataGrid ItemsSource="{Binding ResponseHeaders}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" BorderThickness="0" CanUserResizeColumns="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key}" />
+                                        <DataGridTextColumn Header="Value" Width="3*" Binding="{Binding Value}" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                        </TabControl>
+                        <TextBlock Grid.Row="2" Text="{Binding ResponseMessage}" TextWrapping="Wrap" Foreground="#B85A16" Background="#FFF8EC" Padding="10,6" IsVisible="{Binding HasResponseMessage}" MaxHeight="100" />
+                        <TextBlock Grid.Row="3" Text="{Binding ResponseDetails}" TextTrimming="CharacterEllipsis" FontSize="10" Foreground="#888888" Margin="10,4" IsVisible="{Binding HasResponse}" ToolTip.Tip="{Binding ResponseDetails}" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
