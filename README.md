@@ -5,9 +5,9 @@
 ## 发布打包win-x64
 ```
 cd Pangolin.Desktop
-dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime win-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
-dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime win-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true
-dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime win-arm64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true --no-restore -p:AssemblyName=PangolinSharp
+dotnet publish Pangolin.Desktop.csproj --framework net10.0 --runtime win-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
+dotnet publish Pangolin.Desktop.csproj --framework net10.0 --runtime win-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true
+dotnet publish Pangolin.Desktop.csproj --framework net10.0 --runtime win-arm64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true --no-restore -p:AssemblyName=PangolinSharp
 ```
 
 # dotnet编译自包含运行时的可执行文件，然后可以用anno setup脚本打包exe安装包
