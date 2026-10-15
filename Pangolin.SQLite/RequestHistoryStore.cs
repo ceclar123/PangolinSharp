@@ -57,27 +57,20 @@ public sealed class RequestHistoryStore
             selectHistoryId.Parameters.AddWithValue("$url", url);
             var id = Convert.ToInt64(selectHistoryId.ExecuteScalar(), CultureInfo.InvariantCulture);
 
-            using var replaceDetail = connection.CreateCommand();
-            replaceDetail.Transaction = transaction;
-            replaceDetail.CommandText = "DELETE FROM request_history_detail WHERE history_id = $history_id;";
-            replaceDetail.Parameters.AddWithValue("$history_id", id);
-            replaceDetail.ExecuteNonQuery();
-
             using var insertDetail = connection.CreateCommand();
             insertDetail.Transaction = transaction;
             insertDetail.CommandText = """
                 INSERT INTO request_history_detail (
-                    history_id, created_at_utc, snapshot_version, headers_json, query_params_json,
+                    history_id, created_at_utc, headers_json, query_params_json,
                     body_mode, body_content_type, body_text, form_fields_json,
                     auth_type, auth_config_json, settings_json, secrets_redacted)
                 VALUES (
-                    $history_id, $created_at_utc, $snapshot_version, $headers, $query_params,
+                    $history_id, $created_at_utc, $headers, $query_params,
                     $body_mode, $body_content_type, $body_text, $form_fields,
                     $auth_type, $auth, $settings, $secrets_redacted);
                 """;
             insertDetail.Parameters.AddWithValue("$history_id", id);
             insertDetail.Parameters.AddWithValue("$created_at_utc", ToStorageTime(createdAtUtc));
-            insertDetail.Parameters.AddWithValue("$snapshot_version", RequestHistorySnapshot.CurrentVersion);
             insertDetail.Parameters.AddWithValue("$headers", JsonSerializer.Serialize(snapshot.Headers, JsonOptions));
             insertDetail.Parameters.AddWithValue("$query_params", JsonSerializer.Serialize(snapshot.QueryParameters, JsonOptions));
             insertDetail.Parameters.AddWithValue("$body_mode", snapshot.BodyMode);
@@ -130,7 +123,12 @@ public sealed class RequestHistoryStore
             command.CommandText = """
                 SELECT h.id, d.created_at_utc, h.method, h.url
                 FROM request_history AS h
-                JOIN request_history_detail AS d ON d.history_id = h.id
+                JOIN request_history_detail AS d ON d.id = (
+                    SELECT latest.id
+                    FROM request_history_detail AS latest
+                    WHERE latest.history_id = h.id
+                    ORDER BY latest.created_at_utc DESC, latest.id DESC
+                    LIMIT 1)
                 ORDER BY d.created_at_utc DESC, d.id DESC
                 LIMIT $limit;
                 """;
@@ -161,31 +159,29 @@ public sealed class RequestHistoryStore
             using var connection = OpenConnection();
             using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT snapshot_version, headers_json, query_params_json, body_mode,
+                SELECT headers_json, query_params_json, body_mode,
                        body_content_type, body_text, form_fields_json, auth_type,
                        auth_config_json, settings_json, secrets_redacted
                 FROM request_history_detail
-                WHERE history_id = $history_id;
+                WHERE history_id = $history_id
+                ORDER BY created_at_utc DESC, id DESC
+                LIMIT 1;
                 """;
             command.Parameters.AddWithValue("$history_id", historyId);
             using var reader = command.ExecuteReader();
             if (!reader.Read()) return null;
-            var snapshotVersion = reader.GetInt32(0);
-            if (snapshotVersion > RequestHistorySnapshot.CurrentVersion)
-                throw new NotSupportedException($"Request snapshot version {snapshotVersion} is newer than this application supports.");
             return new RequestHistorySnapshot
             {
-                Version = snapshotVersion,
-                Headers = Deserialize<List<RequestHistoryHeader>>(reader.GetString(1)),
-                QueryParameters = Deserialize<List<RequestHistoryParameter>>(reader.GetString(2)),
-                BodyMode = reader.GetString(3),
-                BodyContentType = reader.GetString(4),
-                BodyText = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                FormFields = Deserialize<List<RequestHistoryFormField>>(reader.GetString(6)),
-                AuthType = reader.GetString(7),
-                Auth = Deserialize<RequestHistoryAuthConfiguration>(reader.GetString(8)),
-                Settings = Deserialize<RequestHistorySettings>(reader.GetString(9)),
-                SecretsRedacted = reader.GetInt32(10) != 0
+                Headers = Deserialize<List<RequestHistoryHeader>>(reader.GetString(0)),
+                QueryParameters = Deserialize<List<RequestHistoryParameter>>(reader.GetString(1)),
+                BodyMode = reader.GetString(2),
+                BodyContentType = reader.GetString(3),
+                BodyText = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                FormFields = Deserialize<List<RequestHistoryFormField>>(reader.GetString(5)),
+                AuthType = reader.GetString(6),
+                Auth = Deserialize<RequestHistoryAuthConfiguration>(reader.GetString(7)),
+                Settings = Deserialize<RequestHistorySettings>(reader.GetString(8)),
+                SecretsRedacted = reader.GetInt32(9) != 0
             };
         }, cancellationToken).ConfigureAwait(false);
     }
@@ -627,9 +623,8 @@ public sealed class RequestHistoryStore
 
             CREATE TABLE IF NOT EXISTS request_history_detail (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                history_id INTEGER NOT NULL UNIQUE,
+                history_id INTEGER NOT NULL,
                 created_at_utc TEXT NOT NULL,
-                snapshot_version INTEGER NOT NULL,
                 headers_json TEXT NOT NULL,
                 query_params_json TEXT NOT NULL,
                 body_mode TEXT NOT NULL,
@@ -642,6 +637,8 @@ public sealed class RequestHistoryStore
                 secrets_redacted INTEGER NOT NULL DEFAULT 0,
                 FOREIGN KEY (history_id) REFERENCES request_history(id) ON DELETE CASCADE
             );
+            CREATE INDEX IF NOT EXISTS idx_request_history_detail_latest
+                ON request_history_detail(history_id, created_at_utc DESC, id DESC);
 
             CREATE TABLE IF NOT EXISTS request_collection (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

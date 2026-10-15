@@ -2,9 +2,6 @@ namespace Pangolin.SQLite.Models;
 
 public sealed class RequestHistorySnapshot
 {
-    public const int CurrentVersion = 1;
-
-    public int Version { get; set; } = CurrentVersion;
     public List<RequestHistoryHeader> Headers { get; set; } = new();
     public List<RequestHistoryParameter> QueryParameters { get; set; } = new();
     public string BodyMode { get; set; } = "none";
