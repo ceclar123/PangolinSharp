@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
 using Avalonia.Input.Platform;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
@@ -153,11 +154,123 @@ namespace Pangolin.Desktop.Views.Postman
             catch (Exception ex) { ShowError(ex); }
         }
 
-        private async void DeleteHistory_Click(object? sender, RoutedEventArgs e)
+        private async void DeleteHistoryDetail_Click(object? sender, RoutedEventArgs e)
         {
             e.Handled = true;
             if (sender is not Button { Tag: long id } || _viewModel == null) return;
-            await _viewModel.DeleteHistoryAsync(id);
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            if (owner == null) return;
+            var confirmation = new ConfirmationDialog(
+                "Remove history detail",
+                "This removes the selected request detail from History. The request and its collection links will remain.");
+            if (!await confirmation.ShowDialog<bool>(owner)) return;
+            await _viewModel.DeleteHistoryDetailAsync(id);
+        }
+
+        private async void DeleteRequestHistory_Click(object? sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { Tag: long id } || _viewModel == null) return;
+            if (TopLevel.GetTopLevel(this) is not Window owner) return;
+            var confirmation = new ConfirmationDialog(
+                "Delete request",
+                "This deletes the request, its detail, and all collection links. This action cannot be undone.");
+            if (await confirmation.ShowDialog<bool>(owner))
+                await _viewModel.DeleteRequestHistoryAsync(id);
+        }
+
+        private async void HistoryList_DoubleTapped(object? sender, TappedEventArgs e)
+        {
+            if (_viewModel == null || _viewModel.SelectedHistoryItem == null) return;
+            e.Handled = true;
+            await _viewModel.OpenSelectedHistoryAsync();
+            if (string.IsNullOrEmpty(_viewModel.HistoryError))
+                RequestEditorTabs.SelectedIndex = 2;
+        }
+
+        private async void CreateRootCollection_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel == null || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var dialog = new CollectionNameDialog("Create collection");
+            var name = await dialog.ShowDialog<string?>(owner);
+            if (!string.IsNullOrWhiteSpace(name)) await _viewModel.CreateCollectionAsync(name, null);
+        }
+
+        private void CollectionContextMenu_Opening(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (sender is not ContextMenu menu || menu.PlacementTarget?.DataContext is not RequestCollectionNode node || _viewModel == null) return;
+            _viewModel.SelectedCollectionNode = node;
+            ConfigureCollectionMenu(menu, node);
+        }
+
+        private void CollectionContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (sender is not Control { DataContext: RequestCollectionNode collection } control) return;
+            _viewModel?.SelectedCollectionNode = collection;
+            if (control.ContextMenu is ContextMenu menu) ConfigureCollectionMenu(menu, collection);
+        }
+
+        private static void ConfigureCollectionMenu(ContextMenu menu, RequestCollectionNode node)
+        {
+            if (menu.Items.Count > 0 && menu.Items[0] is MenuItem createChild)
+                createChild.IsEnabled = node.Depth < 2;
+            if (menu.Items.Count > 1 && menu.Items[1] is MenuItem rename)
+                rename.IsEnabled = node.Id != 0;
+            if (menu.Items.Count > 3 && menu.Items[3] is MenuItem delete)
+                delete.IsEnabled = node.Id != 0;
+        }
+
+        private async void CreateChildCollection_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.SelectedCollectionNode is not { } parent || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var dialog = new CollectionNameDialog("Create child collection");
+            var name = await dialog.ShowDialog<string?>(owner);
+            if (!string.IsNullOrWhiteSpace(name)) await _viewModel.CreateCollectionAsync(name, parent.Id);
+        }
+
+        private async void RenameCollection_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.SelectedCollectionNode is not { Id: > 0 } collection || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var dialog = new CollectionNameDialog("Rename collection", collection.Name);
+            var name = await dialog.ShowDialog<string?>(owner);
+            if (!string.IsNullOrWhiteSpace(name)) await _viewModel.RenameCollectionAsync(collection.Id, name);
+        }
+
+        private async void DeleteCollection_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.SelectedCollectionNode is not { Id: > 0 } collection || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var confirmation = new ConfirmationDialog(
+                "Delete collection",
+                $"Delete '{collection.Path}'? Its requests will remain in history. Requests without another collection will return to Default, and child collections will move up one level.");
+            if (await confirmation.ShowDialog<bool>(owner))
+                await _viewModel.DeleteCollectionAsync(collection.Id);
+        }
+
+        private async void ManageCollectionMembership_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel == null || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var historyId = sender is Button { Tag: long id } ? id : _viewModel.SelectedHistoryItem?.Id;
+            if (!historyId.HasValue) return;
+            if (_viewModel.AllCollectionNodes.Count == 0)
+            {
+                _viewModel.ReportHistoryError("Create a collection before assigning requests to it.");
+                return;
+            }
+
+            var selected = await _viewModel.GetHistoryCollectionIdsAsync(historyId.Value);
+            var picker = new CollectionMembershipDialog(_viewModel.AllCollectionNodes, selected);
+            if (await picker.ShowDialog<bool>(owner))
+                await _viewModel.SetHistoryCollectionsAsync(historyId.Value, picker.SelectedCollectionIds);
+        }
+
+        private async void AddHistoryToCollection_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.SelectedCollectionNode is not { Id: > 0 } collection || TopLevel.GetTopLevel(this) is not Window owner) return;
+            var history = await _viewModel.GetCollectionPickerHistoryAsync();
+            var selected = await _viewModel.GetCollectionHistoryAsync(collection.Id);
+            var picker = new HistoryPickerDialog(collection.Path, history, selected.Select(item => item.Id));
+            if (await picker.ShowDialog<bool>(owner))
+                await _viewModel.SetCollectionHistoryMembersAsync(collection.Id, picker.SelectedHistoryIds);
         }
 
         private void RenderResponse()

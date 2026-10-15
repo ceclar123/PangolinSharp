@@ -63,20 +63,24 @@ public class PostmanUserControlViewModel : ViewModelBase
         CmdAddFormDataParam = ReactiveCommand.Create(() => FormDataParams.Add(new()));
         CmdImportQuery = ReactiveCommand.Create(ImportQuery);
         CmdToggleHeaderBulkEdit = ReactiveCommand.Create(ToggleHeaderBulkEdit);
-        CmdShowCollections = ReactiveCommand.Create(() => { IsHistoryView = false; });
+        CmdShowCollections = ReactiveCommand.CreateFromTask(ShowCollectionsAsync);
         CmdShowHistory = ReactiveCommand.CreateFromTask(ShowHistoryAsync);
     }
 
     public HttpRequestModel Request { get; } = new();
     public ObservableCollection<RequestHistorySummary> HistoryEntries { get; } = new();
     public ObservableCollection<RequestHistorySummary> VisibleHistoryEntries { get; } = new();
+    public ObservableCollection<RequestCollectionNode> CollectionRoots { get; } = new();
+    public ObservableCollection<RequestHistorySummary> CollectionHistoryEntries { get; } = new();
+    private List<RequestCollectionNode> _allCollectionNodes = new();
+    public IReadOnlyList<RequestCollectionNode> AllCollectionNodes => _allCollectionNodes;
     public string DatabasePath => _historyStore.DatabasePath;
     public bool IsCollectionView => !IsHistoryView;
     private bool _isHistoryView;
     public bool IsHistoryView
     {
         get => _isHistoryView;
-        private set
+        set
         {
             this.RaiseAndSetIfChanged(ref _isHistoryView, value);
             this.RaisePropertyChanged(nameof(IsCollectionView));
@@ -103,6 +107,7 @@ public class PostmanUserControlViewModel : ViewModelBase
             this.RaisePropertyChanged(nameof(HasHistoryError));
         }
     }
+    public void ReportHistoryError(string message) => HistoryError = message;
     public bool HasHistory => HistoryEntries.Count != 0;
     public bool HasVisibleHistory => VisibleHistoryEntries.Count != 0;
     public bool HasHistoryError => !string.IsNullOrWhiteSpace(HistoryError);
@@ -120,9 +125,38 @@ public class PostmanUserControlViewModel : ViewModelBase
         {
             if (ReferenceEquals(_selectedHistoryItem, value)) return;
             this.RaiseAndSetIfChanged(ref _selectedHistoryItem, value);
-            if (value != null) HistoryRestoreTask = RestoreHistoryAsync(value);
+            this.RaisePropertyChanged(nameof(HasSelectedHistoryItem));
         }
     }
+    private RequestCollectionNode? _selectedCollectionNode;
+    public RequestCollectionNode? SelectedCollectionNode
+    {
+        get => _selectedCollectionNode;
+        set
+        {
+            if (ReferenceEquals(_selectedCollectionNode, value)) return;
+            this.RaiseAndSetIfChanged(ref _selectedCollectionNode, value);
+            this.RaisePropertyChanged(nameof(HasSelectedCollection));
+            this.RaisePropertyChanged(nameof(CanCreateChildCollection));
+            this.RaisePropertyChanged(nameof(CanAddHistoryToSelectedCollection));
+            this.RaisePropertyChanged(nameof(ShowEmptyCollectionMessage));
+            for (var parent = value?.Parent; parent != null; parent = parent.Parent) parent.IsExpanded = true;
+            if (value == null)
+            {
+                CollectionHistoryEntries.Clear();
+                this.RaisePropertyChanged(nameof(HasCollectionHistory));
+            }
+            else CollectionHistoryLoadTask = LoadCollectionHistoryAsync(value.Id);
+        }
+    }
+    public Task CollectionHistoryLoadTask { get; private set; } = Task.CompletedTask;
+    public bool HasSelectedHistoryItem => SelectedHistoryItem != null;
+    public bool HasSelectedCollection => SelectedCollectionNode != null;
+    public bool CanCreateChildCollection => SelectedCollectionNode is { Depth: < 2 };
+    public bool CanAddHistoryToSelectedCollection => SelectedCollectionNode is { Id: > 0 };
+    public bool HasCollectionHistory => CollectionHistoryEntries.Count != 0;
+    public bool ShowEmptyCollectionMessage => HasSelectedCollection && !HasCollectionHistory;
+    public bool HasCollections => CollectionRoots.Count != 0;
     public ObservableCollection<KeyValueDto<string, string>> Headers { get; } = new();
     public ObservableCollection<KeyValueDto<string, string>> QueryParams { get; } = new();
     public ObservableCollection<FormDataField> FormDataParams { get; } = new();
@@ -383,6 +417,7 @@ public class PostmanUserControlViewModel : ViewModelBase
         {
             await _historyStore.InitializeAsync();
             await RefreshHistoryAsync();
+            await RefreshCollectionsAsync();
         }
         catch (Exception ex)
         {
@@ -395,6 +430,13 @@ public class PostmanUserControlViewModel : ViewModelBase
         IsHistoryView = true;
         await _historyInitialization;
         await RefreshHistoryAsync();
+    }
+
+    private async Task ShowCollectionsAsync()
+    {
+        IsHistoryView = false;
+        await _historyInitialization;
+        await RefreshCollectionsAsync();
     }
 
     private async Task RefreshHistoryAsync()
@@ -413,6 +455,128 @@ public class PostmanUserControlViewModel : ViewModelBase
         {
             HistoryError = $"Could not load request history: {ex.Message}";
         }
+    }
+
+    private async Task RefreshCollectionsAsync(long? preferredSelection = null)
+    {
+        try
+        {
+            var selectionId = preferredSelection ?? SelectedCollectionNode?.Id;
+            var collections = await _historyStore.GetCollectionsAsync();
+            var byParent = collections.ToLookup(collection => collection.ParentId);
+            CollectionRoots.Clear();
+            _allCollectionNodes = new List<RequestCollectionNode>();
+
+            void AddChildren(ObservableCollection<RequestCollectionNode> target, long? parentId, int depth, string parentPath, HashSet<long> ancestors, RequestCollectionNode? parentNode)
+            {
+                if (depth >= 3) return;
+                foreach (var collection in byParent[parentId])
+                {
+                    if (!ancestors.Add(collection.Id)) continue;
+                    var path = string.IsNullOrEmpty(parentPath) ? collection.Name : $"{parentPath} / {collection.Name}";
+                    var node = new RequestCollectionNode(collection, depth, path);
+                    node.Parent = parentNode;
+                    target.Add(node);
+                    _allCollectionNodes.Add(node);
+                    AddChildren(node.Children, node.Id, depth + 1, path, ancestors, node);
+                    ancestors.Remove(collection.Id);
+                }
+            }
+
+            AddChildren(CollectionRoots, null, 0, string.Empty, new HashSet<long>(), null);
+            this.RaisePropertyChanged(nameof(AllCollectionNodes));
+            this.RaisePropertyChanged(nameof(HasCollections));
+            SelectedCollectionNode = selectionId.HasValue
+                ? _allCollectionNodes.FirstOrDefault(node => node.Id == selectionId)
+                : null;
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not load collections: {ex.Message}";
+        }
+    }
+
+    public async Task CreateCollectionAsync(string name, long? parentId)
+    {
+        try
+        {
+            await _historyInitialization;
+            if (parentId.HasValue && _allCollectionNodes.FirstOrDefault(node => node.Id == parentId) is { Depth: >= 2 })
+                throw new InvalidOperationException("The desktop UI supports up to three collection levels.");
+            var id = await _historyStore.CreateCollectionAsync(name, parentId);
+            await RefreshCollectionsAsync(id);
+        }
+        catch (Exception ex) { HistoryError = $"Could not create collection: {ex.Message}"; }
+    }
+
+    public async Task RenameCollectionAsync(long id, string name)
+    {
+        try
+        {
+            await _historyInitialization;
+            await _historyStore.RenameCollectionAsync(id, name);
+            await RefreshCollectionsAsync(id);
+        }
+        catch (Exception ex) { HistoryError = $"Could not rename collection: {ex.Message}"; }
+    }
+
+    public async Task DeleteCollectionAsync(long id)
+    {
+        try
+        {
+            await _historyInitialization;
+            var parentId = _allCollectionNodes.FirstOrDefault(node => node.Id == id)?.ParentId;
+            await _historyStore.DeleteCollectionAsync(id);
+            await RefreshCollectionsAsync(parentId);
+        }
+        catch (Exception ex) { HistoryError = $"Could not delete collection: {ex.Message}"; }
+    }
+
+    private async Task LoadCollectionHistoryAsync(long collectionId)
+    {
+        try
+        {
+            var items = await _historyStore.GetCollectionHistoryAsync(collectionId);
+            if (SelectedCollectionNode?.Id != collectionId) return;
+            CollectionHistoryEntries.Clear();
+            foreach (var item in items) CollectionHistoryEntries.Add(item);
+            this.RaisePropertyChanged(nameof(HasCollectionHistory));
+            this.RaisePropertyChanged(nameof(ShowEmptyCollectionMessage));
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex) { HistoryError = $"Could not load collection requests: {ex.Message}"; }
+    }
+
+    public Task<IReadOnlyList<long>> GetHistoryCollectionIdsAsync(long historyId)
+        => _historyStore.GetHistoryCollectionIdsAsync(historyId);
+
+    public Task<IReadOnlyList<RequestHistorySummary>> GetCollectionPickerHistoryAsync()
+        => _historyStore.GetRecentAsync(RequestHistoryStore.MaximumHistoryEntries);
+
+    public Task<IReadOnlyList<RequestHistorySummary>> GetCollectionHistoryAsync(long collectionId)
+        => _historyStore.GetCollectionHistoryAsync(collectionId);
+
+    public async Task SetHistoryCollectionsAsync(long historyId, IEnumerable<long> collectionIds)
+    {
+        try
+        {
+            await _historyStore.SetHistoryCollectionsAsync(historyId, collectionIds);
+            await RefreshCollectionsAsync();
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex) { HistoryError = $"Could not update collection membership: {ex.Message}"; }
+    }
+
+    public async Task SetCollectionHistoryMembersAsync(long collectionId, IEnumerable<long> historyIds)
+    {
+        try
+        {
+            await _historyStore.SetCollectionHistoryMembersAsync(collectionId, historyIds);
+            await RefreshCollectionsAsync(collectionId);
+            HistoryError = string.Empty;
+        }
+        catch (Exception ex) { HistoryError = $"Could not update collection requests: {ex.Message}"; }
     }
 
     private void FilterHistory()
@@ -447,6 +611,7 @@ public class PostmanUserControlViewModel : ViewModelBase
             this.RaisePropertyChanged(nameof(HasHistory));
             this.RaisePropertyChanged(nameof(HistoryEmptyText));
             FilterHistory();
+            await RefreshCollectionsAsync();
             HistoryError = string.Empty;
         }
         catch (Exception ex)
@@ -537,20 +702,32 @@ public class PostmanUserControlViewModel : ViewModelBase
         try
         {
             var detail = await _historyStore.GetDetailAsync(summary.Id);
-            if (detail == null || version != _historyLoadVersion || SelectedHistoryItem?.Id != summary.Id) return;
+            if (version != _historyLoadVersion || SelectedHistoryItem?.Id != summary.Id) return;
+            if (detail == null)
+            {
+                HistoryError = "This request has no saved detail and cannot be restored.";
+                return;
+            }
             ClearResponse();
             Request.Method = Enum.TryParse<HttpMethodType>(summary.Method, out var method) ? method : HttpMethodType.GET;
             Request.Url = summary.Url;
             QueryParams.Clear();
             foreach (var parameter in detail.QueryParameters)
-                QueryParams.Add(new KeyValueDto<string, string>
-                { Key = parameter.Key, Value = parameter.Value, IsEnabled = parameter.IsEnabled });
+            {
+                QueryParams.Add(new KeyValueDto<string, string> { Key = parameter.Key, Value = parameter.Value, IsEnabled = parameter.IsEnabled });
+            }
+
+            // header信息
+            IsHeaderBulkEdit = false;
+            HeaderBulkText = string.Empty;
             Headers.Clear();
             foreach (var header in detail.Headers)
-                Headers.Add(new KeyValueDto<string, string>
-                { Key = header.Name, Value = header.Value, IsEnabled = header.IsEnabled });
+            {
+                Headers.Add(new KeyValueDto<string, string> { Key = header.Name, Value = header.Value, IsEnabled = header.IsEnabled });
+            }
             FormDataParams.Clear();
             foreach (var field in detail.FormFields)
+            {
                 FormDataParams.Add(new FormDataField
                 {
                     Key = field.Key,
@@ -559,10 +736,14 @@ public class PostmanUserControlViewModel : ViewModelBase
                     IsEnabled = field.IsEnabled,
                     IsFile = field.IsFile
                 });
+            }
             SelectedBodyMode = Enum.TryParse<RequestBodyMode>(detail.BodyMode, out var bodyMode) ? (int)bodyMode : 0;
             SelectedMediaType = detail.BodyContentType switch
             {
-                "application/json" => "JSON", "application/xml" => "XML", "text/html" => "HTML", _ => "Text"
+                "application/json" => "JSON",
+                "application/xml" => "XML",
+                "text/html" => "HTML",
+                _ => "Text"
             };
             Request.Body = detail.BodyText;
             SelectedAuthType = detail.AuthType;
@@ -576,8 +757,6 @@ public class PostmanUserControlViewModel : ViewModelBase
             VerifySslCertificate = detail.Settings.VerifySslCertificate;
             AutomaticallyEncodeUrl = detail.Settings.AutomaticallyEncodeUrl;
             TimeoutSeconds = detail.Settings.TimeoutSeconds;
-            IsHeaderBulkEdit = false;
-            HeaderBulkText = string.Empty;
             HistorySecretsRedacted = detail.SecretsRedacted;
             this.RaisePropertyChanged(nameof(HistorySecretsRedacted));
             this.RaisePropertyChanged(nameof(HistorySecretsNotice));
@@ -592,19 +771,27 @@ public class PostmanUserControlViewModel : ViewModelBase
         }
     }
 
+    public Task OpenSelectedHistoryAsync()
+    {
+        if (SelectedHistoryItem == null) return Task.CompletedTask;
+        HistoryRestoreTask = RestoreHistoryAsync(SelectedHistoryItem);
+        return HistoryRestoreTask;
+    }
+
     private static bool IsSensitiveName(string? name)
     {
         if (string.IsNullOrWhiteSpace(name)) return false;
         var normalized = new string(name.Where(char.IsLetterOrDigit).ToArray());
-        return normalized.Contains("password", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("passwd", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("secret", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("token", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("credential", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("authorization", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("apikey", StringComparison.OrdinalIgnoreCase)
-            || normalized.Contains("privatekey", StringComparison.OrdinalIgnoreCase)
-            || normalized is "auth" or "cookie" or "session" or "sessionid" or "setcookie";
+        //return normalized.Contains("password", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("passwd", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("secret", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("token", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("credential", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("authorization", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("apikey", StringComparison.OrdinalIgnoreCase)
+        //    || normalized.Contains("privatekey", StringComparison.OrdinalIgnoreCase)
+        //    || normalized is "auth" or "cookie" or "session" or "sessionid" or "setcookie";
+        return false;
     }
 
     private static string RedactUrl(string url)
@@ -632,6 +819,28 @@ public class PostmanUserControlViewModel : ViewModelBase
     }
 
     public async Task DeleteHistoryAsync(long id)
+        => await DeleteRequestHistoryAsync(id);
+
+    public async Task DeleteHistoryDetailAsync(long id)
+    {
+        try
+        {
+            await _historyInitialization;
+            await _historyStore.DeleteDetailAsync(id);
+            if (SelectedHistoryItem?.Id == id)
+            {
+                ++_historyLoadVersion;
+                SelectedHistoryItem = null;
+            }
+            await RefreshHistoryAsync();
+        }
+        catch (Exception ex)
+        {
+            HistoryError = $"Could not delete request history detail: {ex.Message}";
+        }
+    }
+
+    public async Task DeleteRequestHistoryAsync(long id)
     {
         try
         {
@@ -643,6 +852,7 @@ public class PostmanUserControlViewModel : ViewModelBase
                 SelectedHistoryItem = null;
             }
             await RefreshHistoryAsync();
+            await RefreshCollectionsAsync();
         }
         catch (Exception ex)
         {

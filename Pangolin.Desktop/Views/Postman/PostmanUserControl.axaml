@@ -47,6 +47,9 @@
             <Setter Property="MinHeight" Value="26" />
             <Setter Property="Padding" Value="8,3" />
         </Style>
+        <Style Selector="TreeViewItem" x:CompileBindings="False">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
         <Style Selector="TextBlock.responseMetric">
             <Setter Property="Foreground" Value="#16835D" />
             <Setter Property="FontSize" Value="11" />
@@ -86,39 +89,66 @@
                         <Button Content="History" MinWidth="60" Command="{Binding CmdShowHistory}" Classes.clear="{Binding !IsHistoryView}" />
                     </StackPanel>
 
-                    <Border Grid.Row="1" Margin="12,4,12,10" Background="#FFFFFF" BorderBrush="#DFDFDF" BorderThickness="1" CornerRadius="3">
+                    <Border Grid.Row="1" IsVisible="{Binding IsHistoryView}" Margin="12,4,12,10" Background="#FFFFFF" BorderBrush="#DFDFDF" BorderThickness="1" CornerRadius="3">
                         <TextBox Margin="8,4" PlaceholderText="Filter" Text="{Binding HistoryFilter, Mode=TwoWay}" />
                     </Border>
 
-                    <ScrollViewer Grid.Row="2" IsVisible="{Binding IsCollectionView}">
-                        <StackPanel Margin="12,0,12,12" Spacing="8">
-                            <Border Background="#FFFFFF" BorderBrush="#DEDEDE" BorderThickness="1" CornerRadius="4" Padding="10">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Pangolin Requests" FontWeight="SemiBold" />
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="GET" Foreground="#0C7C59" FontWeight="SemiBold" Width="42" />
-                                        <TextBlock Text="Untitled Request" Foreground="#444444" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="POST" Foreground="#C35A00" FontWeight="SemiBold" Width="42" />
-                                        <TextBlock Text="New Request" Foreground="#444444" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <TextBlock Text="No environment" Foreground="#777777" Margin="2,8,0,0" />
-                        </StackPanel>
-                    </ScrollViewer>
-                    <Grid Grid.Row="2" IsVisible="{Binding IsHistoryView}" RowDefinitions="*,Auto">
-                        <Grid Grid.Row="0">
-                            <ListBox ItemsSource="{Binding VisibleHistoryEntries}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}">
+                    <Grid Grid.Row="2" IsVisible="{Binding IsCollectionView}" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="8,0,8,8">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="2,0,2,6">
+                            <TextBlock Text="Collections" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button Grid.Column="1" Content="New" Classes="clear" Click="CreateRootCollection_Click" ToolTip.Tip="Create collection" />
+                            <Button Grid.Column="2" Content="+" Classes="clear" Click="AddHistoryToCollection_Click" IsEnabled="{Binding CanAddHistoryToSelectedCollection}" ToolTip.Tip="Add request history to this collection" />
+                        </Grid>
+                        <TreeView Grid.Row="1" x:Name="CollectionsTree" ItemsSource="{Binding CollectionRoots}" SelectedItem="{Binding SelectedCollectionNode, Mode=TwoWay}" MaxHeight="250">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate DataType="vm:RequestCollectionNode" ItemsSource="{Binding Children}">
+                                    <Grid ColumnDefinitions="*,Auto" MinWidth="180" ContextRequested="CollectionContextRequested">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Path}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding RequestCount}" Foreground="#888888" FontSize="10" Margin="6,0,0,0" />
+                                        <Grid.ContextMenu>
+                                            <ContextMenu Opening="CollectionContextMenu_Opening">
+                                                <MenuItem Header="Create child collection" Click="CreateChildCollection_Click" />
+                                                <MenuItem Header="Rename collection" Click="RenameCollection_Click" />
+                                                <Separator />
+                                                <MenuItem Header="Delete collection" Click="DeleteCollection_Click" />
+                                            </ContextMenu>
+                                        </Grid.ContextMenu>
+                                    </Grid>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                        <TextBlock Grid.Row="1" Text="Create a collection to organize requests" IsVisible="{Binding !HasCollections}" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Margin="8" />
+                        <TextBlock Grid.Row="2" Text="{Binding SelectedCollectionNode.Path}" IsVisible="{Binding HasSelectedCollection}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedCollectionNode.Path}" Margin="3,8,3,4" />
+                        <Grid Grid.Row="3">
+                            <ListBox ItemsSource="{Binding CollectionHistoryEntries}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" DoubleTapped="HistoryList_DoubleTapped">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate x:DataType="db:RequestHistorySummary">
-                                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="4,5" ColumnSpacing="8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" Margin="4,4" ColumnSpacing="4">
                                             <TextBlock Text="{Binding Method}" Grid.RowSpan="2" VerticalAlignment="Center" Foreground="#0C7C59" FontWeight="SemiBold" />
                                             <TextBlock Grid.Column="1" Text="{Binding Url}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Url}" />
                                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayTime}" Foreground="#888888" FontSize="10" />
-                                            <Button Grid.Column="2" Grid.RowSpan="2" Content="×" Tag="{Binding Id}" Click="DeleteHistory_Click" Classes="clear" ToolTip.Tip="Remove request from history" />
+                                            <Button Grid.Column="2" Grid.RowSpan="2" Content="+" Tag="{Binding Id}" Click="ManageCollectionMembership_Click" Classes="clear" ToolTip.Tip="Add this request to other collections" />
+                                            <Button Grid.Column="3" Grid.RowSpan="2" Content="Del" Tag="{Binding Id}" Click="DeleteRequestHistory_Click" Classes="clear" ToolTip.Tip="Delete request and all collection links" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Text="Select a collection" IsVisible="{Binding !HasSelectedCollection}" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                            <TextBlock Text="No requests in this collection" IsVisible="{Binding ShowEmptyCollectionMessage}" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                        </Grid>
+                        <TextBlock Grid.Row="4" Text="{Binding HistoryError}" IsVisible="{Binding HasHistoryError}" TextWrapping="Wrap" Foreground="#B85A16" Margin="4" MaxHeight="72" />
+                    </Grid>
+                    <Grid Grid.Row="2" IsVisible="{Binding IsHistoryView}" RowDefinitions="*,Auto">
+                        <Grid Grid.Row="0">
+                            <ListBox ItemsSource="{Binding VisibleHistoryEntries}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" DoubleTapped="HistoryList_DoubleTapped">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="db:RequestHistorySummary">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" Margin="4,5" ColumnSpacing="4">
+                                            <TextBlock Text="{Binding Method}" Grid.RowSpan="2" VerticalAlignment="Center" Foreground="#0C7C59" FontWeight="SemiBold" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Url}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Url}" />
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayTime}" Foreground="#888888" FontSize="10" />
+                                            <Button Grid.Column="2" Grid.RowSpan="2" Content="+" Tag="{Binding Id}" Click="ManageCollectionMembership_Click" Classes="clear" ToolTip.Tip="Add to one or more collections" />
+                                            <Button Grid.Column="3" Grid.RowSpan="2" Content="Del" Tag="{Binding Id}" Click="DeleteHistoryDetail_Click" Classes="clear" ToolTip.Tip="Remove this history detail" />
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -170,7 +200,7 @@
                 </Border>
 
                 <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#DCDCDC" BorderThickness="1" CornerRadius="4">
-                    <TabControl>
+                    <TabControl x:Name="RequestEditorTabs">
                         <TabItem Header="Params">
                             <Grid RowDefinitions="Auto,*" Margin="12">
                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
@@ -252,9 +282,9 @@
                                           BorderBrush="#E1E1E1"
                                           BorderThickness="1">
                                     <DataGrid.Columns>
-                                        <DataGridCheckBoxColumn Header="" Width="42" Binding="{Binding IsEnabled, Mode=TwoWay}" />
-                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key, Mode=TwoWay}" />
-                                        <DataGridTextColumn Header="Value" Width="2*" Binding="{Binding Value, Mode=TwoWay}" />
+                                        <DataGridCheckBoxColumn Header="" Width="42" Binding="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <DataGridTextColumn Header="Value" Width="2*" Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <DataGridTemplateColumn Header="" Width="40">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
