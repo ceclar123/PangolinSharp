@@ -74,8 +74,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 ## 发布打包osx-x64
 ```
 cd Pangolin.Desktop
-dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime osx-arm64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
-dotnet publish Pangolin.Desktop.csproj --framework net8.0 --runtime osx-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
+dotnet publish Pangolin.Desktop.csproj --framework net10.0 --runtime osx-arm64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
+dotnet publish Pangolin.Desktop.csproj --framework net10.0 --runtime osx-x64 --configuration Release -p:UseAppHost=true -p:PublishAot=false -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --self-contained true -p:AssemblyName=Pangolin.Desktop
 ```
 
 ## 打包成可执行文件
