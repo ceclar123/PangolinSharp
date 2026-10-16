@@ -1,10 +1,11 @@
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Pangolin.Desktop.ViewModels;
 using Pangolin.Desktop.Views;
+using System;
 
 namespace Pangolin.Desktop
 {
@@ -35,14 +36,38 @@ namespace Pangolin.Desktop
                     desktop.MainWindow.Width = 800;
                     desktop.MainWindow.Height = 600;
                 }
-            }
 
+                // 关闭窗口不要自动退出程序
+                // desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnExplicitShutdown;
+            }
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void Close_OnClick(object? sender, EventArgs e)
+        public void TrayIcon_OnClicked(object? sender, EventArgs e)
         {
-            Environment.Exit(0);
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow?.Show();
+                if (desktop.MainWindow?.WindowState == WindowState.Minimized)
+                {
+                    desktop.MainWindow?.WindowState = WindowState.Normal;
+                }
+                desktop.MainWindow?.Activate();
+            }
+        }
+
+        public void Close_OnClick(object? sender, EventArgs e)
+        {
+            // Environment.Exit(0);
+            switch (ApplicationLifetime)
+            {
+                case IClassicDesktopStyleApplicationLifetime desktopLifetime:
+                    desktopLifetime.TryShutdown();
+                    break;
+                case IControlledApplicationLifetime controlledLifetime:
+                    controlledLifetime.Shutdown();
+                    break;
+            }
         }
     }
 }

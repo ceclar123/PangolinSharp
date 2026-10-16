@@ -15,8 +15,7 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-        <AvaloniaResource Include="MacOSPublish\tray.icns" />
-        <AvaloniaResource Remove="Config\**" />
+        <AvaloniaResource Include="MacOSPublish\tray.icns" />        
     </ItemGroup>
 
     <ItemGroup>
@@ -26,8 +25,7 @@
         <None Remove="Assets\pangolin_256.ico" />
         <None Remove="Assets\pangolin_32.ico" />
         <None Remove="Assets\pangolin_48.ico" />
-        <None Remove="Assets\pangolin_64.ico" />
-        <None Remove="Config\**" />
+        <None Remove="Assets\pangolin_64.ico" />        
     </ItemGroup>
 
     <ItemGroup>
@@ -57,6 +55,9 @@
     </ItemGroup>
 
     <ItemGroup>
+		<AvaloniaResource Update="Assets\icon\pangolin_64.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</AvaloniaResource>
         <AvaloniaResource Update="Assets\icon\pangolin_32.ico">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </AvaloniaResource>
@@ -70,16 +71,14 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>Resources.resx</DependentUpon>
-        </Compile>
-        <Compile Remove="Config\**" />
+        </Compile>        
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Update="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Remove="Config\**" />
+        </EmbeddedResource>        
     </ItemGroup>
 
     <ItemGroup>
@@ -87,23 +86,5 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <AvaloniaXaml Remove="Config\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <AvaloniaXaml Remove="Views\Postman\**\*.axaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <AdditionalFiles Remove="Config\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <AvaloniaXaml Include="Views\Postman\PostmanUserControl.axaml">
-        <SubType>Designer</SubType>
-      </AvaloniaXaml>
     </ItemGroup>
 </Project>
